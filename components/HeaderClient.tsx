@@ -4,26 +4,13 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Package, Users, CircleUserRound, LogIn, LogOut } from "lucide-react";
+import { useAuth } from "@/lib/hooks/useAuth";
 
-type MockUser = { full_name?: string; email?: string };
-const CLIENT_NAME = process.env.NEXT_PUBLIC_CLIENT_NAME ?? "Hogarelectric";
+const CLIENT_NAME = "Hogarelectric";
 
 export default function HeaderClient() {
-  const [user, setUser] = useState<MockUser | null>(null);
 
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem("user");
-      if (raw) setUser(JSON.parse(raw));
-    } catch {
-      setUser(null);
-    }
-  }, []);
-
-  function handleSignOut() {
-    localStorage.removeItem("user");
-    setUser(null);
-  }
+  const { user, logout } = useAuth();
 
   return (
     <header className="border-b bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/50">
@@ -46,7 +33,7 @@ export default function HeaderClient() {
                 aria-hidden="true"
               >
                 <CircleUserRound className="h-5 w-5" />
-                <span className="text-sm">{user.full_name ?? user.email}</span>
+                <span className="text-sm">{user.user_metadata?.full_name ?? user.email}</span>
               </div>
             )}
 
@@ -57,14 +44,14 @@ export default function HeaderClient() {
 
             {user ? (
               <Button
-                onClick={handleSignOut}
+                onClick={logout}
                 size="sm" className="cursor-pointer bg-destructive"
               >
                 <LogOut className="h-4 w-4" />
                 Cerrar Sesión
               </Button>
             ) : (
-              <Link href="/auth" className="cursor-pointer">
+              <Link href="/auth/login" className="cursor-pointer">
                 <Button size="sm" className="cursor-pointer">
                   <LogIn className="h-4 w-4 mr-2" />
                   Iniciar Sesión
