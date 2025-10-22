@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { ArrowDownCircle, ArrowUpCircle, Search, Filter, Calendar, Eye, Download } from "lucide-react"
+import { ArrowDownCircle, ArrowUpCircle, Search, Filter, Calendar, Eye, Download, Plus } from "lucide-react"
 import { mockMovements } from "@/data/mockMovements"
 
 export function MovementsSection() {
@@ -20,7 +20,7 @@ export function MovementsSection() {
 
   return (
     <div className="space-y-6">
-      {/* Header Actions */}
+
       <div className="flex flex-col sm:flex-row gap-4 justify-between">
         <div className="flex flex-1 gap-4">
           <div className="relative flex-1 max-w-sm">
@@ -37,9 +37,12 @@ export function MovementsSection() {
             Filtros
           </Button>
         </div>
+        <Button className="cursor-pointer">
+          <Plus className="h-4 w-4 mr-2" />
+          Agregar movimiento
+        </Button>
       </div>
 
-      {/* Movements List */}
       <div className="space-y-4">
         {filteredMovements.map((mov) => (
           <Card key={mov.id} className="hover:shadow-md transition-shadow">
@@ -67,16 +70,6 @@ export function MovementsSection() {
                         {new Date(mov.fecha).toLocaleDateString("es-ES")}
                       </div>
                       <span>{mov.cantidad} unidades</span>
-                    </div>
-                    <div>
-                    <p className="text-xs text-muted-foreground mt-3">
-                      Registrado por: <span className="font-bold">{mov.usuario}</span>
-                    </p>
-                    {mov.motivo && (
-                      <p className="text-xs text-muted-foreground mt-2">
-                        Motivo: <span className="font-bold">{mov.motivo}</span>
-                      </p>
-                    )}
                     </div>
                   </div>
                 </div>
