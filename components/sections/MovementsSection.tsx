@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ArrowDownCircle, ArrowUpCircle, Search, Filter, Calendar, Eye, Download, Plus } from "lucide-react"
 import { mockMovements } from "@/data/mockMovements"
+import { MovementFormModal } from "@/components/modals/MovementFormModal"
 
 export function MovementsSection() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -17,6 +18,16 @@ export function MovementsSection() {
       mov.producto_nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
       mov.usuario.toLowerCase().includes(searchTerm.toLowerCase())
   )
+
+  const [modalOpen, setModalOpen] = useState(false)
+  const [modalMode, setModalMode] = useState<"create" | "edit">("create")
+  const [selectedMovement, setSelectedMovement] = useState<any | null>(null)
+
+  function handleAddMovement() {
+    setModalMode("create")
+    setSelectedMovement(null)
+    setModalOpen(true)
+  }
 
   return (
     <div className="space-y-6">
@@ -37,7 +48,7 @@ export function MovementsSection() {
             Filtros
           </Button>
         </div>
-        <Button className="cursor-pointer">
+        <Button className="cursor-pointer" onClick={handleAddMovement}>
           <Plus className="h-4 w-4 mr-2" />
           Agregar movimiento
         </Button>
@@ -105,6 +116,18 @@ export function MovementsSection() {
           </CardContent>
         </Card>
       )}
+      <MovementFormModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        productos={[]}
+        onSubmit={(data) => {
+          if (modalMode === "create") {
+            // TODO: agregar movimiento a Supabase
+          } else {
+            // TODO: actualizar movimiento en Supabase
+          }
+        }}
+      />
     </div>
   )
 }
