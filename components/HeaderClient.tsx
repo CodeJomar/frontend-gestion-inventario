@@ -37,11 +37,6 @@ export default function HeaderClient() {
               </div>
             )}
 
-            <Button variant="outline" size="sm" className="cursor-pointer">
-              <Users className="h-4 w-4 mr-2" />
-              Ver Usuarios
-            </Button>
-
             {user ? (
               <Button
                 onClick={logout}
