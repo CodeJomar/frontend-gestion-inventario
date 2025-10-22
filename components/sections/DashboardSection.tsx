@@ -3,52 +3,64 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { Package, ShoppingCart, AlertTriangle, DollarSign, } from "lucide-react"
+import { Package, AlertTriangle, BarChart3, ArrowDownCircle, } from "lucide-react"
+import { mockProductos } from "@/data/mockProducts"
+
 
 export function DashboardSection() {
+
+  const STOCK_MINIMO_GLOBAL = 5
+  const lowStockItems = mockProductos.filter(p => p.stock < STOCK_MINIMO_GLOBAL)
+
   const stats = [
     {
       title: "Total Productos",
-      value: "1,234",
+      value: mockProductos.reduce((acc, p) => acc + p.stock, 0).toString(),
       change: "+12%",
       icon: Package,
       color: "text-primary",
     },
     {
-      title: "Órdenes Pendientes",
-      value: "89",
-      change: "+5%",
-      icon: ShoppingCart,
+      title: "Movimientos del Mes",
+      value: "245",
+      change: "+22%",
+      icon: BarChart3,
       color: "text-accent",
     },
     {
-      title: "Ingresos del Mes",
-      value: "$45,231",
-      change: "+18%",
-      icon: DollarSign,
+      title: "Entradas vs Salidas",
+      value: "Entrada +120 / Salida -98",
+      change: "+22",
+      icon: ArrowDownCircle,
       color: "text-chart-3",
     },
     {
-      title: "Stock Bajo",
-      value: "23",
+      title: "Stock Crítico",
+      value: lowStockItems.length.toString(),
       change: "-8%",
       icon: AlertTriangle,
       color: "text-destructive",
     },
   ]
 
-  const lowStockItems = [
-    { name: "Laptop Dell XPS 13", stock: 5, min: 10 },
-    { name: "Mouse Logitech MX", stock: 3, min: 15 },
-    { name: "Teclado Mecánico", stock: 2, min: 8 },
-    { name: 'Monitor 24"', stock: 1, min: 5 },
-  ]
 
-  const recentOrders = [
-    { id: "ORD-001", customer: "Empresa ABC", total: "$2,340", status: "Pendiente" },
-    { id: "ORD-002", customer: "Tech Solutions", total: "$1,890", status: "Procesando" },
-    { id: "ORD-003", customer: "StartUp XYZ", total: "$3,450", status: "Enviado" },
-    { id: "ORD-004", customer: "Corp Industries", total: "$890", status: "Entregado" },
+  const recentMovements = [
+    {
+      id: "MOV-001",
+      tipo: "Entrada",
+      producto: "Licuadora Oster",
+      cantidad: 10,
+      fecha: "2025-10-20",
+      usuario: "admin@hogarelectric.pe",
+    },
+    {
+      id: "MOV-002",
+      tipo: "Salida",
+      producto: "Cable HDMI",
+      cantidad: 5,
+      fecha: "2025-10-19",
+      usuario: "ventas@hogarelectric.pe",
+    },
   ]
 
   return (
@@ -92,11 +104,11 @@ export function DashboardSection() {
             {lowStockItems.map((item, index) => (
               <div key={index} className="flex items-center justify-between space-x-4">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{item.name}</p>
+                  <p className="text-sm font-medium truncate">{item.nombre}</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <Progress value={(item.stock / item.min) * 100} className="flex-1 h-2" />
+                    <Progress value={(item.stock / STOCK_MINIMO_GLOBAL) * 100} className="flex-1 h-2" />
                     <span className="text-xs text-muted-foreground">
-                      {item.stock}/{item.min}
+                      {item.stock}/{STOCK_MINIMO_GLOBAL}
                     </span>
                   </div>
                 </div>
@@ -108,39 +120,29 @@ export function DashboardSection() {
           </CardContent>
         </Card>
 
-        {/* Recent Orders */}
+        {/* Recent Movements */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <ShoppingCart className="h-5 w-5 text-primary" />
-              Órdenes Recientes
+              <BarChart3 className="h-5 w-5 text-primary" />
+              Movimientos Recientes
             </CardTitle>
-            <CardDescription>
-              Últimas órdenes procesadas en el sistema
-            </CardDescription>
+            <CardDescription>Últimas entradas y salidas registradas</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {recentOrders.map((order, index) => (
+            {recentMovements.map((mov, index) => (
               <div key={index} className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <p className="text-sm font-medium">{order.id}</p>
-                  <p className="text-xs text-muted-foreground">{order.customer}</p>
+                  <p className="text-sm font-medium">{mov.id}</p>
+                  <p className="text-xs text-muted-foreground">{mov.producto}</p>
                 </div>
                 <div className="text-right space-y-1">
-                  <p className="text-sm font-medium">{order.total}</p>
+                  <p className="text-sm font-medium">{mov.cantidad} unidades</p>
                   <Badge
-                    variant={
-                      order.status === "Entregado"
-                        ? "default"
-                        : order.status === "Enviado"
-                          ? "secondary"
-                          : order.status === "Procesando"
-                            ? "outline"
-                            : "destructive"
-                    }
+                    variant={mov.tipo === "Entrada" ? "default" : "destructive"}
                     className="text-xs"
                   >
-                    {order.status}
+                    {mov.tipo}
                   </Badge>
                 </div>
               </div>
