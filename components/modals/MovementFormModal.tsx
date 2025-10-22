@@ -162,11 +162,11 @@ export function MovementFormModal({
           </select>
         </div>
 
-        <div className="flex justify-end gap-2 pt-4">
-          <Button className="cursor-pointer" type="button" variant="outline" onClick={() => onOpenChange(false)}>
+        <div className="flex justify-end gap-8 pt-4">
+          <Button className="cursor-pointer px-8" type="button" variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button className="cursor-pointer" type="submit">Registrar Movimiento</Button>
+          <Button className="cursor-pointer px-8" type="submit">Registrar</Button>
         </div>
       </form>
     </ModalBase>

@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge"
 import { ArrowDownCircle, ArrowUpCircle, Search, Filter, Calendar, Eye, Download, Plus } from "lucide-react"
 import { mockMovements } from "@/data/mockMovements"
 import { MovementFormModal } from "@/components/modals/MovementFormModal"
+import { Movimiento } from "@/types/movements"
+import { MovementDetailModal } from "../modals/MovementDetailModal"
 
 export function MovementsSection() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -21,7 +23,8 @@ export function MovementsSection() {
 
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState<"create" | "edit">("create")
-  const [selectedMovement, setSelectedMovement] = useState<any | null>(null)
+  const [selectedMovement, setSelectedMovement] = useState<Movimiento | null>(null)
+  const [detailOpen, setDetailOpen] = useState(false)
 
   function handleAddMovement() {
     setModalMode("create")
@@ -86,11 +89,11 @@ export function MovementsSection() {
                 </div>
 
                 <div className="flex flex-col items-center p-4 gap-6">
-                  <Button variant="outline" size="sm" className="w-full cursor-pointer">
+                  <Button onClick={() => { setDetailOpen(true); setSelectedMovement(mov); }} variant="outline" size="sm" className="w-full cursor-pointer">
                     <Eye className="h-4 w-4 mr-2" />
                     Ver Detalles
                   </Button>
-                  <Button variant="outline" size="sm" className="w-full cursor-pointer">
+                  <Button variant="outline" size="sm" className="w-full cursor-pointer" disabled>
                     <Download className="h-4 w-4 mr-2" />
                     Descargar PDF
                   </Button>
@@ -128,6 +131,12 @@ export function MovementsSection() {
           }
         }}
       />
+      <MovementDetailModal
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+        movimiento={selectedMovement}
+      />
+
     </div>
   )
 }
