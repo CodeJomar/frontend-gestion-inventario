@@ -6,12 +6,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Search, Filter, Plus, Edit, Trash2, Package } from "lucide-react"
-import { mockProductos } from "../../data/mockProducts"
+import { mockProducts } from "@/data/mockProducts"
 
 export function ProductsSection() {
   const [searchTerm, setSearchTerm] = useState("")
 
-  const filteredProducts = mockProductos.filter(
+  const filteredProducts = mockProducts.filter(
     (product) =>
       product.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.categoria.toLowerCase().includes(searchTerm.toLowerCase())
@@ -31,19 +31,19 @@ export function ProductsSection() {
               className="pl-10"
             />
           </div>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="cursor-pointer">
             <Filter className="h-4 w-4 mr-2" />
             Filtros
           </Button>
         </div>
-        <Button>
+        <Button className="cursor-pointer">
           <Plus className="h-4 w-4 mr-2" />
           Agregar Producto
         </Button>
       </div>
 
       {/* Products Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {filteredProducts.map((product) => {
           const status =
             product.stock === 0
@@ -54,11 +54,11 @@ export function ProductsSection() {
 
           return (
             <Card key={product.id} className="hover:shadow-md transition-shadow">
-              <CardHeader className="pb-3">
+              <CardHeader className="pb-1">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-3">
                     <img
-                      src={product.imagen_url || "/placeholder.svg"}
+                      src={product.imagen_url || "/images/default-product.jpg"}
                       alt={product.nombre}
                       className="w-12 h-12 rounded-lg object-cover bg-muted"
                     />
@@ -81,18 +81,18 @@ export function ProductsSection() {
                 </div>
               </CardHeader>
               <CardContent className="pt-0">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between mb-6">
                   <div>
                     <p className="text-2xl font-bold text-primary">S/. {product.precio}</p>
                     <p className="text-sm text-muted-foreground">Stock: {product.stock} unidades</p>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="flex-1 bg-transparent">
+                <div className="flex gap-4">
+                  <Button variant="outline" size="sm" className="flex-1 bg-transparent cursor-pointer">
                     <Edit className="h-4 w-4 mr-2" />
                     Editar
                   </Button>
-                  <Button variant="outline" size="sm" className="flex-1 bg-transparent">
+                  <Button variant="outline" size="sm" className="flex-1 bg-transparent cursor-pointer">
                     <Trash2 className="h-4 w-4 mr-2" />
                     Eliminar
                   </Button>

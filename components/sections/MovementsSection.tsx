@@ -5,13 +5,13 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { ArrowDownCircle, ArrowUpCircle, Search, Filter, Calendar } from "lucide-react"
-import { mockMovimientos } from "@/data/mockMovements"
+import { ArrowDownCircle, ArrowUpCircle, Search, Filter, Calendar, Eye, Download } from "lucide-react"
+import { mockMovements } from "@/data/mockMovements"
 
 export function MovementsSection() {
   const [searchTerm, setSearchTerm] = useState("")
 
-  const filteredMovimientos = mockMovimientos.filter(
+  const filteredMovements = mockMovements.filter(
     (mov) =>
       mov.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       mov.producto_nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -32,7 +32,7 @@ export function MovementsSection() {
               className="pl-10"
             />
           </div>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="cursor-pointer">
             <Filter className="h-4 w-4 mr-2" />
             Filtros
           </Button>
@@ -41,16 +41,16 @@ export function MovementsSection() {
 
       {/* Movements List */}
       <div className="space-y-4">
-        {filteredMovimientos.map((mov) => (
+        {filteredMovements.map((mov) => (
           <Card key={mov.id} className="hover:shadow-md transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
+            <CardContent className="p-2">
+              <div className="flex items-center justify-between px-8">
                 <div className="flex items-center space-x-4">
-                  <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-muted">
+                  <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-muted">
                     {mov.tipo === "Entrada" ? (
-                      <ArrowDownCircle className="h-6 w-6 text-green-500" />
+                      <ArrowDownCircle className="h-8 w-8 text-green-500" />
                     ) : (
-                      <ArrowUpCircle className="h-6 w-6 text-red-500" />
+                      <ArrowUpCircle className="h-8 w-8 text-red-500" />
                     )}
                   </div>
                   <div>
@@ -68,15 +68,28 @@ export function MovementsSection() {
                       </div>
                       <span>{mov.cantidad} unidades</span>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Registrado por: {mov.usuario}
+                    <div>
+                    <p className="text-xs text-muted-foreground mt-3">
+                      Registrado por: <span className="font-bold">{mov.usuario}</span>
                     </p>
                     {mov.motivo && (
-                      <p className="text-xs text-muted-foreground italic mt-1">
-                        Motivo: {mov.motivo}
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Motivo: <span className="font-bold">{mov.motivo}</span>
                       </p>
                     )}
+                    </div>
                   </div>
+                </div>
+
+                <div className="flex flex-col items-center p-4 gap-6">
+                  <Button variant="outline" size="sm" className="w-full cursor-pointer">
+                    <Eye className="h-4 w-4 mr-2" />
+                    Ver Detalles
+                  </Button>
+                  <Button variant="outline" size="sm" className="w-full cursor-pointer">
+                    <Download className="h-4 w-4 mr-2" />
+                    Descargar PDF
+                  </Button>
                 </div>
               </div>
             </CardContent>
@@ -85,7 +98,7 @@ export function MovementsSection() {
       </div>
 
       {/* Empty State */}
-      {filteredMovimientos.length === 0 && (
+      {filteredMovements.length === 0 && (
         <Card className="text-center py-12">
           <CardContent>
             <ArrowUpCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />

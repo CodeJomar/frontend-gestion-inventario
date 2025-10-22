@@ -5,17 +5,30 @@ import { DashboardSection } from "@/components/sections/DashboardSection"
 import { ProductsSection } from "@/components/sections/ProductsSection"
 import { MovementsSection } from "@/components/sections/MovementsSection"
 import { ReportsSection } from "@/components/sections/ReportsSection"
+import { ArrowDownCircle, BarChart3, Package, TrendingUp } from "lucide-react"
 
 export default function InventorySystem() {
   return (
     <main className="container mx-auto px-4 py-6">
       <Tabs defaultValue="dashboard" className="space-y-6">
-        
+
         <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
-          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-          <TabsTrigger value="products">Productos</TabsTrigger>
-          <TabsTrigger value="movements">Movimientos</TabsTrigger>
-          <TabsTrigger value="reports">Reportes</TabsTrigger>
+          <TabsTrigger value="dashboard" className="flex items-center gap-2 cursor-pointer">
+            <BarChart3 className="h-4 w-4" />
+            Dashboard
+          </TabsTrigger>
+          <TabsTrigger value="products" className="flex items-center gap-2 cursor-pointer">
+            <Package className="h-4 w-4" />
+            Productos
+          </TabsTrigger>
+          <TabsTrigger value="movements" className="flex items-center gap-2 cursor-pointer">
+            <ArrowDownCircle className="h-4 w-4" />
+            Movimientos
+          </TabsTrigger>
+          <TabsTrigger value="reports" className="flex items-center gap-2 cursor-pointer">
+            <TrendingUp className="h-4 w-4" />
+            Reportes
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="products">
@@ -30,7 +43,7 @@ export default function InventorySystem() {
         <TabsContent value="reports">
           <ReportsSection />
         </TabsContent>
-      
+
       </Tabs>
     </main>
   )

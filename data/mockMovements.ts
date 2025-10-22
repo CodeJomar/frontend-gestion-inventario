@@ -1,4 +1,4 @@
-export const mockMovimientos: Movimiento[] = [
+export const mockMovements: Movimiento[] = [
   {
     id: "MOV-001",
     tipo: "Entrada",
