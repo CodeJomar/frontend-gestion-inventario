@@ -7,6 +7,22 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Search, Filter, Plus, Edit, Trash2, Package } from "lucide-react"
 import { mockProducts } from "@/data/mockProducts"
+import { ProductFormModal } from "@/components/modals/ProductFormModal"
+
+export const categorias = [
+  "Cocina",
+  "Limpieza",
+  "Lavandería",
+  "Climatización",
+  "Belleza Personal",
+  "Cuidado del Hogar",
+  "Electrodomésticos Pequeños",
+  "Entretenimiento",
+  "Oficina y Tecnología",
+  "Otros"
+]
+
+export const tipos = ["electrodomestico", "accesorio", "consumible"]
 
 export function ProductsSection() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -16,6 +32,22 @@ export function ProductsSection() {
       product.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.categoria.toLowerCase().includes(searchTerm.toLowerCase())
   )
+
+  const [modalOpen, setModalOpen] = useState(false)
+  const [modalMode, setModalMode] = useState<"create" | "edit">("create")
+  const [selectedProduct, setSelectedProduct] = useState<any | null>(null)
+
+  function handleAddProduct() {
+    setModalMode("create")
+    setSelectedProduct(null)
+    setModalOpen(true)
+  }
+
+  function handleEditProduct(product: any) {
+    setModalMode("edit")
+    setSelectedProduct(product)
+    setModalOpen(true)
+  }
 
   return (
     <div className="space-y-6">
@@ -36,7 +68,7 @@ export function ProductsSection() {
             Filtros
           </Button>
         </div>
-        <Button className="cursor-pointer">
+        <Button className="cursor-pointer" onClick={handleAddProduct}>
           <Plus className="h-4 w-4 mr-2" />
           Agregar Producto
         </Button>
@@ -49,8 +81,8 @@ export function ProductsSection() {
             product.stock === 0
               ? "Agotado"
               : product.stock < 10
-              ? "Bajo Stock"
-              : "En Stock"
+                ? "Bajo Stock"
+                : "En Stock"
 
           return (
             <Card key={product.id} className="hover:shadow-md transition-shadow">
@@ -72,8 +104,8 @@ export function ProductsSection() {
                       status === "Agotado"
                         ? "destructive"
                         : status === "Bajo Stock"
-                        ? "secondary"
-                        : "default"
+                          ? "secondary"
+                          : "default"
                     }
                   >
                     {status}
@@ -88,7 +120,7 @@ export function ProductsSection() {
                   </div>
                 </div>
                 <div className="flex gap-4">
-                  <Button variant="outline" size="sm" className="flex-1 bg-transparent cursor-pointer">
+                  <Button variant="outline" size="sm" className="flex-1 bg-transparent cursor-pointer" onClick={() => handleEditProduct(product)}>
                     <Edit className="h-4 w-4 mr-2" />
                     Editar
                   </Button>
@@ -116,6 +148,22 @@ export function ProductsSection() {
           </CardContent>
         </Card>
       )}
+      <ProductFormModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        mode={modalMode}
+        initialData={selectedProduct || undefined}
+        categorias={categorias}
+        tipos={tipos}
+        onSubmit={(data) => {
+          if (modalMode === "create") {
+            // TODO: agregar producto a Supabase
+          } else {
+            // TODO: actualizar producto en Supabase
+          }
+        }}
+
+      />
     </div>
   )
 }
