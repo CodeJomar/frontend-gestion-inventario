@@ -5,8 +5,8 @@ export async function loginWithEmail(email: string, password: string) {
   try {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      const friendly = mapAuthError(error);
-      return { data: null, error: friendly };
+      const message = mapAuthError(error);
+      return { data: null, error: message };
     }
 
     const token = data?.session?.access_token;
@@ -22,8 +22,8 @@ export async function loginWithEmail(email: string, password: string) {
 
     return { data, error: null };
   } catch (err: any) {
-    const friendly = mapAuthError(err);
-    return { data: null, error: friendly };
+    const message = mapAuthError(err);
+    return { data: null, error: message };
   }
 }
 

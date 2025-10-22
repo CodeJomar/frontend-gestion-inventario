@@ -4,18 +4,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, } from "@/co
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Package, AlertTriangle, BarChart3, ArrowDownCircle, } from "lucide-react"
-import { mockProductos } from "@/data/mockProducts"
+import { mockProducts } from "@/data/mockProducts"
 
 
 export function DashboardSection() {
 
   const STOCK_MINIMO_GLOBAL = 5
-  const lowStockItems = mockProductos.filter(p => p.stock < STOCK_MINIMO_GLOBAL)
+  const lowStockItems = mockProducts.filter(p => p.stock < STOCK_MINIMO_GLOBAL)
 
   const stats = [
     {
       title: "Total Productos",
-      value: mockProductos.reduce((acc, p) => acc + p.stock, 0).toString(),
+      value: mockProducts.reduce((acc, p) => acc + p.stock, 0).toString(),
       change: "+12%",
       icon: Package,
       color: "text-primary",
@@ -101,7 +101,7 @@ export function DashboardSection() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {lowStockItems.map((item, index) => (
+            {lowStockItems.slice(0, 5).map((item, index) => (
               <div key={index} className="flex items-center justify-between space-x-4">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium truncate">{item.nombre}</p>
