@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -8,6 +8,11 @@ import { Badge } from "@/components/ui/badge"
 import { Search, Filter, Plus, Edit, Trash2, Package, PinOff } from "lucide-react"
 import { mockProducts } from "@/data/mockProducts"
 import { ProductFormModal } from "@/components/modals/ProductFormModal"
+import { createProduct, fetchProducts, updateProduct } from "@/lib/api/products"
+import { Producto } from "@/types/products"
+import { useProducts } from "@/lib/hooks/useProducts"
+import { Skeleton } from "@/components/ui/skeleton"
+
 
 export const categorias = [
   "Cocina",
@@ -25,17 +30,17 @@ export const categorias = [
 export const tipos = ["electrodomestico", "accesorio", "consumible"]
 
 export function ProductsSection() {
+  const { productsList, loading, loadProducts } = useProducts()
   const [searchTerm, setSearchTerm] = useState("")
 
-  const filteredProducts = mockProducts.filter(
+  const filteredProducts = productsList.filter(
     (product) =>
       product.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.categoria.toLowerCase().includes(searchTerm.toLowerCase())
   )
-
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState<"create" | "edit">("create")
-  const [selectedProduct, setSelectedProduct] = useState<any | null>(null)
+  const [selectedProduct, setSelectedProduct] = useState<Producto | null>(null)
 
   function handleAddProduct() {
     setModalMode("create")
@@ -74,7 +79,19 @@ export function ProductsSection() {
         </Button>
       </div>
 
-      {/* Products Grid */}
+      {loading && (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {[...Array(6)].map((_, i) => (
+            <Card key={i} className="p-4 space-y-4 animate-pulse">
+              <Skeleton className="h-12 w-12 rounded-lg" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-4 w-1/2" />
+              <Skeleton className="h-6 w-full" />
+            </Card>
+          ))}
+        </div>
+      )}
+
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {filteredProducts.map((product) => {
           const status =
@@ -86,13 +103,13 @@ export function ProductsSection() {
 
           return (
             <Card key={product.id} className="hover:shadow-md transition-shadow">
-              <CardHeader className="pb-1">
+              <CardHeader>
                 <div className="flex items-start justify-between">
-                  <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-4">
                     <img
                       src={product.imagen_url || "/images/default-product.jpg"}
                       alt={product.nombre}
-                      className="w-12 h-12 rounded-lg object-cover bg-muted"
+                      className="w-25 h-25 rounded-lg object-cover bg-muted"
                     />
                     <div>
                       <CardTitle className="text-base">{product.nombre}</CardTitle>
@@ -112,8 +129,8 @@ export function ProductsSection() {
                   </Badge>
                 </div>
               </CardHeader>
-              <CardContent className="pt-0">
-                <div className="flex items-center justify-between mb-6">
+              <CardContent>
+                <div className="flex items-center justify-between mb-4">
                   <div>
                     <p className="text-2xl font-bold text-primary">S/. {product.precio}</p>
                     <p className="text-sm text-muted-foreground">Stock: {product.stock} unidades</p>
@@ -135,16 +152,12 @@ export function ProductsSection() {
         })}
       </div>
 
-      {filteredProducts.length === 0 && (
+      {!loading && filteredProducts.length === 0 && (
         <Card className="text-center py-12">
           <CardContent>
             <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">No se encontraron productos</h3>
             <p className="text-muted-foreground mb-4">No hay productos que coincidan con tu búsqueda.</p>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Agregar Primer Producto
-            </Button>
           </CardContent>
         </Card>
       )}
@@ -157,10 +170,15 @@ export function ProductsSection() {
         tipos={tipos}
         onSubmit={(data) => {
           if (modalMode === "create") {
-            // TODO: agregar producto a Supabase
-          } else {
-            // TODO: actualizar producto en Supabase
+            createProduct(data).then(() =>
+              loadProducts()
+            )
+          } else if (selectedProduct) {
+            updateProduct(selectedProduct.id, data).then(() =>
+              loadProducts()
+            )
           }
+          setModalOpen(false)
         }}
 
       />

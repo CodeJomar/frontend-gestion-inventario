@@ -84,7 +84,6 @@ export function ProductFormModal({
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
 
-    // Se envía solo lo que la BD necesita
     const payload = {
       nombre: form.nombre,
       marca: form.marca,

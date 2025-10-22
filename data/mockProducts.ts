@@ -33,7 +33,7 @@ export const mockProducts: Producto[] = [
     nombre: "Cocina Eléctrica",
     marca: "Mabe",
     categoria: "Cocina",
-    descripcion: "Cocina eléctrica de 4 hornallas con horno",
+    descripcion: "Cocina eléctrica de 4 hornillas con horno",
     precio: 299.0,
     stock: 15,
     tipo: "electrodomestico",
