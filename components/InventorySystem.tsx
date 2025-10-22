@@ -24,6 +24,9 @@ export default function InventorySystem() {
         <TabsContent value="dashboard">
           <DashboardSection />
         </TabsContent>
+        <TabsContent value="movements">
+          <MovementsSection />
+        </TabsContent>
       
       </Tabs>
     </main>
