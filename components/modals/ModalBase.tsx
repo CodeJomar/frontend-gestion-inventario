@@ -17,8 +17,8 @@ interface ModalBaseProps {
 export function ModalBase({ title, description, children, open, onOpenChange }: ModalBaseProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
+      <DialogContent className="max-w-md py-10 px-6 sm:px-8 lg:px-10">
+        <DialogHeader className="mb-4">
           <DialogTitle>{title}</DialogTitle>
           {description && <DialogDescription>{description}</DialogDescription>}
         </DialogHeader>

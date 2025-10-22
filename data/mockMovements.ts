@@ -1,3 +1,5 @@
+import type { Movimiento } from "@/types/movements"
+
 export const mockMovements: Movimiento[] = [
   {
     id: "MOV-001",

@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Search, Filter, Plus, Edit, Trash2, Package } from "lucide-react"
+import { Search, Filter, Plus, Edit, Trash2, Package, PinOff } from "lucide-react"
 import { mockProducts } from "@/data/mockProducts"
 import { ProductFormModal } from "@/components/modals/ProductFormModal"
 
@@ -120,13 +120,13 @@ export function ProductsSection() {
                   </div>
                 </div>
                 <div className="flex gap-4">
-                  <Button variant="outline" size="sm" className="flex-1 bg-transparent cursor-pointer" onClick={() => handleEditProduct(product)}>
+                  <Button variant="outline" size="sm" className="flex-1 bg-transparent cursor-pointer py-5" onClick={() => handleEditProduct(product)}>
                     <Edit className="h-4 w-4 mr-2" />
                     Editar
                   </Button>
-                  <Button variant="outline" size="sm" className="flex-1 bg-transparent cursor-pointer">
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Eliminar
+                  <Button variant="outline" size="sm" className="flex-1 bg-transparent cursor-pointer py-5" disabled>
+                    <PinOff className="h-4 w-4 mr-2" />
+                    Deshabilitar
                   </Button>
                 </div>
               </CardContent>

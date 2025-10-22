@@ -7,17 +7,10 @@ import { Input } from "@/components/ui/input"
 import { Filter } from "lucide-react"
 import { UserFormModal } from "@/components/modals/UserFormModal"
 import { mockUsers } from "@/data/mockUsers"
-
-type UiUser = {
-  id: string
-  nombre: string
-  correo: string
-  rol: string
-  active: boolean
-}
+import type { Usuario } from "@/types/users"
 
 export function AdminUsersSection() {
-  const [users, setUsers] = useState<UiUser[]>(mockUsers)
+  const [users, setUsers] = useState<Usuario[]>(mockUsers)
   const [query, setQuery] = useState("")
 
   useEffect(() => {
@@ -27,7 +20,7 @@ export function AdminUsersSection() {
 
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState<"create" | "edit">("create")
-  const [selectedUser, setSelectedUser] = useState<UiUser | null>(null)
+  const [selectedUser, setSelectedUser] = useState<Usuario | null>(null)
 
   function handleAddUser() {
     setModalMode("create")
@@ -35,7 +28,7 @@ export function AdminUsersSection() {
     setModalOpen(true)
   }
 
-  function handleEditUser(user: UiUser) {
+  function handleEditUser(user: Usuario) {
     setModalMode("edit")
     setSelectedUser(user)
     setModalOpen(true)
@@ -155,11 +148,9 @@ export function AdminUsersSection() {
         initialData={selectedUser || undefined}
         onSubmit={(data) => {
           if (modalMode === "create") {
-            setUsers((prev) => [...prev, { ...data, id: `USR-${prev.length + 1}` }])
+            // TODO: insertar usuario en Supabase
           } else {
-            setUsers((prev) =>
-              prev.map((u) => (u.id === data.id ? data : u))
-            )
+            // TODO: actualizar usuario
           }
         }}
       />

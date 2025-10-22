@@ -5,15 +5,20 @@ import { ModalBase } from "./ModalBase"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { mockProducts } from "@/data/mockProducts"
-import { mockUsers } from "@/data/mockUsers"
+
+type UserFormData = {
+  nombre: string
+  correo: string
+  rol: "admin" | "ventas" | "almacén"
+  active: boolean
+}
 
 type UserFormModalProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   mode: "create" | "edit"
-  initialData?: UiUser
-  onSubmit: (data: UiUser) => void
+  initialData?: UserFormData
+  onSubmit: (data: UserFormData) => void
 }
 
 export function UserFormModal({
@@ -23,8 +28,7 @@ export function UserFormModal({
   initialData,
   onSubmit,
 }: UserFormModalProps) {
-  const [form, setForm] = useState<UiUser>({
-    id: "",
+  const [form, setForm] = useState<UserFormData>({
     nombre: "",
     correo: "",
     rol: "ventas",
@@ -33,7 +37,7 @@ export function UserFormModal({
 
   useEffect(() => {
     if (initialData) setForm(initialData)
-    else setForm({ id: "", nombre: "", correo: "", rol: "ventas", active: true })
+    else setForm({ nombre: "", correo: "", rol: "ventas", active: true })
   }, [initialData])
 
   function handleChange(
