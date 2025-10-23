@@ -12,6 +12,7 @@ type MovementFormModalProps = {
   onOpenChange: (open: boolean) => void
   productos: { id: string; nombre: string }[]
   onSubmit: (data: any) => void
+  setActiveTab: (value: string) => void
 }
 
 export function MovementFormModal({
@@ -19,6 +20,7 @@ export function MovementFormModal({
   onOpenChange,
   productos,
   onSubmit,
+  setActiveTab,
 }: MovementFormModalProps) {
   const [form, setForm] = useState({
     producto_id: "",
@@ -77,8 +79,7 @@ export function MovementFormModal({
       description="Completa los campos para registrar una entrada o salida de producto."
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-
-        <div className="space-y-2">
+        <div className="space-y-2 border-b pb-5">
           <Label htmlFor="producto_id">Producto</Label>
           <select
             name="producto_id"
@@ -92,9 +93,24 @@ export function MovementFormModal({
               <option key={p.id} value={p.id}>{p.nombre}</option>
             ))}
           </select>
+          {form.producto_id === "" && (
+            <div className="flex items-center justify-between pt-2">
+              <p className="text-sm italic font-semibold text-muted-foreground text-primary">
+                ¿No encuentras el producto que necesitas?
+              </p>
+              <Button
+                type="button"
+                className="cursor-pointer"
+                size="sm"
+                onClick={() => setActiveTab("products")}
+              >
+                Agregar producto
+              </Button>
+            </div>
+          )}
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4 pt-4">
           <div className="space-y-2">
             <Label htmlFor="tipo_movimiento">Tipo</Label>
             <select
@@ -158,7 +174,13 @@ export function MovementFormModal({
           <Button className="cursor-pointer px-8" type="button" variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button className="cursor-pointer px-8" type="submit">Registrar</Button>
+          <Button
+            className="cursor-pointer px-8"
+            type="submit"
+            disabled={form.producto_id === ""}
+          >
+            Registrar
+          </Button>
         </div>
       </form>
     </ModalBase>
