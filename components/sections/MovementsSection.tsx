@@ -15,7 +15,7 @@ import { useMovements } from "@/lib/hooks/useMovements"
 import { Skeleton } from "../ui/skeleton"
 
 
-export function MovementsSection() {
+export function MovementsSection({ setActiveTab }: { setActiveTab: (value: string) => void }) {
   const [searchTerm, setSearchTerm] = useState("")
   const { productsList } = useProducts()
   const { movements, loading, loadMovements } = useMovements()
@@ -174,6 +174,7 @@ export function MovementsSection() {
             }
           }
         }}
+        setActiveTab={setActiveTab}
       />
       <MovementDetailModal
         open={detailOpen}

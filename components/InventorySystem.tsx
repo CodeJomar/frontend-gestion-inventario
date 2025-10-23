@@ -7,14 +7,16 @@ import { MovementsSection } from "@/components/sections/MovementsSection"
 import { ReportsSection } from "@/components/sections/ReportsSection"
 import { ArrowDownCircle, BarChart3, Package, TrendingUp, Users } from "lucide-react"
 import { AdminUsersSection } from "./sections/AdminUsersSection"
+import { useState } from "react"
 
 export default function InventorySystem() {
 
   const isAdmin = true
+  const [activeTab, setActiveTab] = useState("dashboard")
 
   return (
     <main className="container mx-auto px-4 py-6">
-      <Tabs defaultValue="dashboard" className="space-y-6">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
 
         <TabsList className="grid w-full grid-cols-5 lg:w-[800px]">
           <TabsTrigger value="dashboard" className="flex items-center gap-2 cursor-pointer">
@@ -48,7 +50,7 @@ export default function InventorySystem() {
           <DashboardSection />
         </TabsContent>
         <TabsContent value="movements">
-          <MovementsSection />
+          <MovementsSection setActiveTab={setActiveTab} />
         </TabsContent>
         <TabsContent value="reports">
           <ReportsSection />
