@@ -6,19 +6,24 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ArrowDownCircle, ArrowUpCircle, Search, Filter, Calendar, Eye, Download, Plus } from "lucide-react"
-import { mockMovements } from "@/data/mockMovements"
 import { MovementFormModal } from "@/components/modals/MovementFormModal"
-import { Movimiento } from "@/types/movements"
+import { Movimiento, MovimientoCreado } from "@/types/movements"
 import { MovementDetailModal } from "../modals/MovementDetailModal"
+import { useProducts } from "@/lib/hooks/useProducts"
+import { createMovement } from "@/lib/api/movements"
+import { useMovements } from "@/lib/hooks/useMovements"
+import { Skeleton } from "../ui/skeleton"
+
 
 export function MovementsSection() {
   const [searchTerm, setSearchTerm] = useState("")
+  const { productsList } = useProducts()
+  const { movements, loading, loadMovements } = useMovements()
 
-  const filteredMovements = mockMovements.filter(
-    (mov) =>
-      mov.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      mov.producto_nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      mov.usuario.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredMovements = movements.filter((mov) =>
+    mov.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    obtenerNombreProducto(mov.producto_id).toLowerCase().includes(searchTerm.toLowerCase()) ||
+    mov.usuario.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   const [modalOpen, setModalOpen] = useState(false)
@@ -30,6 +35,11 @@ export function MovementsSection() {
     setModalMode("create")
     setSelectedMovement(null)
     setModalOpen(true)
+  }
+
+  function obtenerNombreProducto(id: string): string {
+    const producto = productsList.find(p => p.id === id)
+    return producto?.nombre || "Producto desconocido"
   }
 
   return (
@@ -56,56 +66,89 @@ export function MovementsSection() {
           Agregar movimiento
         </Button>
       </div>
-
-      <div className="space-y-4">
-        {filteredMovements.map((mov) => (
-          <Card key={mov.id} className="hover:shadow-md transition-shadow">
-            <CardContent className="p-2">
-              <div className="flex items-center justify-between px-8">
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-muted">
-                    {mov.tipo === "Entrada" ? (
-                      <ArrowDownCircle className="h-8 w-8 text-green-500" />
-                    ) : (
-                      <ArrowUpCircle className="h-8 w-8 text-red-500" />
-                    )}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-3 mb-1">
-                      <h3 className="font-semibold text-lg">{mov.id}</h3>
-                      <Badge variant={mov.tipo === "Entrada" ? "default" : "destructive"}>
-                        {mov.tipo}
-                      </Badge>
+      {loading && (
+        <div className="space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <Card key={i} className="hover:shadow-md transition-shadow p-2 animate-pulse">
+              <CardContent>
+                <div className="flex items-center justify-between px-8">
+                  <div className="flex items-center space-x-4">
+                    <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-muted">
+                      <Skeleton className="h-6 w-6 rounded-full" />
                     </div>
-                    <p className="text-muted-foreground">{mov.producto_nombre}</p>
-                    <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
-                        {new Date(mov.fecha).toLocaleDateString("es-ES")}
+                    <div>
+                      <div className="flex items-center gap-3 mb-1">
+                        <Skeleton className="h-4 w-24" />
+                        <Skeleton className="h-4 w-16 rounded-full" />
                       </div>
-                      <span>{mov.cantidad} unidades</span>
+                      <Skeleton className="h-3 w-32 mb-1" />
+                      <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
+                        <Skeleton className="h-3 w-24" />
+                        <Skeleton className="h-3 w-16" />
+                      </div>
                     </div>
                   </div>
+                  <div className="flex flex-col items-center p-4 gap-6">
+                    <Skeleton className="h-8 w-24 rounded-md" />
+                    <Skeleton className="h-8 w-24 rounded-md" />
+                  </div>
                 </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
-                <div className="flex flex-col items-center p-4 gap-6">
-                  <Button onClick={() => { setDetailOpen(true); setSelectedMovement(mov); }} variant="outline" size="sm" className="w-full cursor-pointer">
-                    <Eye className="h-4 w-4 mr-2" />
-                    Ver Detalles
-                  </Button>
-                  <Button variant="outline" size="sm" className="w-full cursor-pointer" disabled>
-                    <Download className="h-4 w-4 mr-2" />
-                    Descargar PDF
-                  </Button>
+      {!loading && filteredMovements.length > 0 && (
+        <div className="space-y-4">
+          {filteredMovements.map((mov) => (
+            <Card key={mov.id} className="hover:shadow-md transition-shadow">
+              <CardContent className="p-2">
+                <div className="flex items-center justify-between px-8">
+                  <div className="flex items-center space-x-4">
+                    <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-muted">
+                      {mov.tipo_movimiento === "entrada" ? (
+                        <ArrowDownCircle className="h-8 w-8 text-green-500" />
+                      ) : (
+                        <ArrowUpCircle className="h-8 w-8 text-red-500" />
+                      )}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-3 mb-1">
+                        <h3 className="font-semibold text-lg">{mov.id}</h3>
+                        <Badge variant={mov.tipo_movimiento === "entrada" ? "default" : "destructive"}>
+                          {mov.tipo_movimiento === "entrada" ? "Entrada" : "Salida"}
+                        </Badge>
+                      </div>
+                      <p className="text-muted-foreground">{obtenerNombreProducto(mov.producto_id)}</p>
+                      <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-4 w-4" />
+                          {mov.fecha ? new Date(mov.fecha).toLocaleDateString("es-ES") : "Fecha desconocida"}
+                        </div>
+                        <span>{mov.cantidad} unidades</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col items-center p-4 gap-6">
+                    <Button onClick={() => { setDetailOpen(true); setSelectedMovement(mov); }} variant="outline" size="sm" className="w-full cursor-pointer">
+                      <Eye className="h-4 w-4 mr-2" />
+                      Ver Detalles
+                    </Button>
+                    <Button variant="outline" size="sm" className="w-full cursor-pointer" disabled>
+                      <Download className="h-4 w-4 mr-2" />
+                      Descargar PDF
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
-      {/* Empty State */}
-      {filteredMovements.length === 0 && (
+      {!loading && filteredMovements.length === 0 && (
         <Card className="text-center py-12">
           <CardContent>
             <ArrowUpCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -113,21 +156,22 @@ export function MovementsSection() {
             <p className="text-muted-foreground mb-4">
               No hay registros que coincidan con tu búsqueda.
             </p>
-            <Button>
-              Registrar Movimiento
-            </Button>
           </CardContent>
         </Card>
       )}
       <MovementFormModal
         open={modalOpen}
         onOpenChange={setModalOpen}
-        productos={[]}
-        onSubmit={(data) => {
+        productos={productsList.map(p => ({ id: p.id, nombre: p.nombre }))}
+        onSubmit={async (data: MovimientoCreado) => {
           if (modalMode === "create") {
-            // TODO: agregar movimiento a Supabase
-          } else {
-            // TODO: actualizar movimiento en Supabase
+            try {
+              await createMovement(data)
+              await loadMovements()
+              setModalOpen(false)
+            } catch (err) {
+              console.error("Error al crear movimiento", err)
+            }
           }
         }}
       />

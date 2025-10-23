@@ -5,7 +5,6 @@ import { ModalBase } from "./ModalBase"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { mockProducts } from "@/data/mockProducts"
 import { mockUsers } from "@/data/mockUsers"
 
 type MovementFormModalProps = {
@@ -45,13 +44,6 @@ export function MovementFormModal({
     : form.tipo_movimiento === "salida"
       ? motivosSalida
       : []
-
-  const motivoMap: Record<string, string> = {
-    "compra de proveedor": "reposición",
-    "devolución cliente": "devolución",
-    "ajuste por error": "ajuste",
-    "venta directa": "venta",
-  }
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -96,7 +88,7 @@ export function MovementFormModal({
             className="w-full px-3 py-2 border rounded-md text-sm shadow-sm"
           >
             <option value="">Selecciona un producto</option>
-            {mockProducts.map((p) => (
+            {productos.map((p) => (
               <option key={p.id} value={p.id}>{p.nombre}</option>
             ))}
           </select>

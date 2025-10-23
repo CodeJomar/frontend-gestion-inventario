@@ -1,38 +1,77 @@
-import { actualizar_producto, eliminar_producto, obtener_producto } from "@/lib/services/products"
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
-import { Producto } from "@/types/products"
+
 import { productsErrors } from "@/lib/errors/productsErrors"
 
+const FASTAPI_URL = "http://127.0.0.1:8000/productos/{id}"
 
-export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
-  const productItem: Producto | null = await obtener_producto(params.id)
-  if (!productItem) {
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    const res = await fetch(FASTAPI_URL.replace("{id}", params.id))
+    if (!res.ok) {
+      console.error("FastAPI GET error:", await res.text())
+      return NextResponse.json(productsErrors.notFound.body, {
+        status: productsErrors.notFound.status
+      })
+    }
+    const productItem = await res.json()
+
+    if (!productItem || !productItem.id) {
+      return NextResponse.json(productsErrors.notFound.body, {
+        status: productsErrors.notFound.status
+      })
+    }
+
+    return NextResponse.json(productItem)
+  } catch (error) {
+    console.error("GET /api/products/[id] error:", error)
     return NextResponse.json(productsErrors.notFound.body, {
       status: productsErrors.notFound.status
     })
   }
-  return NextResponse.json(productItem)
 }
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
-  const body = await req.json()
-  const updatedProduct = await actualizar_producto(params.id, body)
-  if (!updatedProduct) {
+  try {
+    const body = await req.json()
+    const res = await fetch(FASTAPI_URL.replace("{id}", params.id), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    })
+    if (!res.ok) {
+      console.error("FastAPI PUT error:", await res.text())
+      return NextResponse.json(productsErrors.updateFailed.body, {
+        status: productsErrors.updateFailed.status
+      })
+    }
+    const updatedProduct = await res.json()
+    return NextResponse.json(updatedProduct)
+  } catch (error) {
+    console.error("PUT /api/products/[id] error:", error)
     return NextResponse.json(productsErrors.updateFailed.body, {
       status: productsErrors.updateFailed.status
     })
   }
-  return NextResponse.json(updatedProduct)
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
-  const deletedProduct = await eliminar_producto(params.id)
-  if (!deletedProduct) {
+  try {
+    const res = await fetch(FASTAPI_URL.replace("{id}", params.id), {
+      method: "DELETE",
+    })
+    if (!res.ok) {
+      console.error("FastAPI DELETE error:", await res.text())
+      return NextResponse.json(productsErrors.deleteFailed.body, {
+        status: productsErrors.deleteFailed.status
+      })
+    }
+    const deletedProduct = await res.json()
+    return NextResponse.json(deletedProduct)
+  } catch (error) {
+    console.error("DELETE /api/products/[id] error:", error)
     return NextResponse.json(productsErrors.deleteFailed.body, {
       status: productsErrors.deleteFailed.status
     })
   }
-  return NextResponse.json(deletedProduct)
 }
-
