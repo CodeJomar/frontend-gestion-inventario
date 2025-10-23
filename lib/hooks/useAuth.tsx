@@ -56,8 +56,6 @@ export function useAuth() {
   */
   async function logout() {
     await logoutFromApp();
-    setUser(null);
-    setSession(null);
   }
 
   return { user, session, login, logout, loading, error };

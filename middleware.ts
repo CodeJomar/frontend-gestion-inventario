@@ -16,7 +16,7 @@ export async function middleware(req: NextRequest) {
   const publicPaths = ["/auth/login", "/api", "/_next", "/favicon.ico"];
   if (publicPaths.some(p => req.nextUrl.pathname.startsWith(p))) return NextResponse.next();
 
-  if (process.env.NODE_ENV === "development") return NextResponse.next();
+  //if (process.env.NODE_ENV === "development") return NextResponse.next();
 
   const token = req.cookies.get("sb_access_token")?.value;
   if (!token) {
