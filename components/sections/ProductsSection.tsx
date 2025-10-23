@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Search, Filter, Plus, Edit, Trash2, Package, PinOff } from "lucide-react"
-import { mockProducts } from "@/data/mockProducts"
 import { ProductFormModal } from "@/components/modals/ProductFormModal"
 import { createProduct, fetchProducts, updateProduct } from "@/lib/api/products"
 import { Producto } from "@/types/products"
@@ -48,7 +47,7 @@ export function ProductsSection() {
     setModalOpen(true)
   }
 
-  function handleEditProduct(product: any) {
+  function handleEditProduct(product: Producto) {
     setModalMode("edit")
     setSelectedProduct(product)
     setModalOpen(true)
@@ -168,17 +167,19 @@ export function ProductsSection() {
         initialData={selectedProduct || undefined}
         categorias={categorias}
         tipos={tipos}
-        onSubmit={(data) => {
-          if (modalMode === "create") {
-            createProduct(data).then(() =>
-              loadProducts()
-            )
-          } else if (selectedProduct) {
-            updateProduct(selectedProduct.id, data).then(() =>
-              loadProducts()
-            )
+        onSubmit={async (data) => {
+          try {
+            if (modalMode === "create") {
+              await createProduct(data)
+            } else if (selectedProduct) {
+              await updateProduct(selectedProduct.id, data)
+            }
+            await loadProducts()
+          } catch (error) {
+            console.error("Error al guardar producto:", error)
+          } finally {
+            setModalOpen(false)
           }
-          setModalOpen(false)
         }}
 
       />

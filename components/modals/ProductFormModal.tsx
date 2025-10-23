@@ -91,7 +91,6 @@ export function ProductFormModal({
       descripcion: form.descripcion,
       precio: form.precio,
       stock: form.stock,
-      tipo: form.tipo,
       imagen_url: form.imagen_url,
     }
 

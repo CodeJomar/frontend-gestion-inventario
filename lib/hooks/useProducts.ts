@@ -8,9 +8,14 @@ export function useProducts() {
 
   const loadProducts = async () => {
     setLoading(true)
-    const data = await fetchProducts()
-    setProducts(data)
-    setLoading(false)
+    try {
+      const data = await fetchProducts()
+      setProducts(data)
+    } catch (error) {
+      console.error("Error loading products:", error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
