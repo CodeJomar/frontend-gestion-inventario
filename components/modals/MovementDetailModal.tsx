@@ -11,9 +11,9 @@ type MovementDetailModalProps = {
   movimiento: Movimiento | null
 }
 
-function formatearFecha(fechaISO: string): string {
-  const fecha = new Date(fechaISO)
-  return fecha.toLocaleString("es-PE", {
+function formatDate(isoDateString: string): string {
+  const date = new Date(isoDateString)
+  return date.toLocaleString("es-PE", {
     weekday: "long",
     year: "numeric",
     month: "long",
@@ -23,6 +23,10 @@ function formatearFecha(fechaISO: string): string {
   })
 }
 
+function formatMovementId(id: string): string {
+  return `MOV00-${id.slice(0, 6)}`
+}
+
 export function MovementDetailModal({
   open,
   onOpenChange,
@@ -30,9 +34,10 @@ export function MovementDetailModal({
 }: MovementDetailModalProps) {
   if (!movimiento) return null
 
-  const fechaFormateada = formatearFecha(movimiento.fecha)
+  const formattedMovementDate = formatDate(movimiento.fecha)
 
-  const tipoIcon = movimiento.tipo === "Entrada"
+  const textType = movimiento.tipo_movimiento === "entrada" ? "Entrada" : "Salida"
+  const iconType = movimiento.tipo_movimiento === "entrada"
     ? <ArrowDownCircle className="h-5 w-5 text-green-600" />
     : <ArrowUpCircle className="h-5 w-5 text-red-600" />
 
@@ -44,16 +49,16 @@ export function MovementDetailModal({
       description="Información completa del registro seleccionado."
     >
       <div className="rounded-md border p-6 bg-muted/30 space-y-4 text-sm shadow-sm">
-        
+
         <div className="border-b pb-2 mb-6 flex justify-between items-center ">
           <div className="flex items-center gap-2 text-muted-foreground">
-            <span className="font-medium">ID de Movimiento:</span>
-            <span className="text-foreground font-bold">{movimiento.id}</span>
+            <span className="font-medium">ID:</span>
+            <span className="text-foreground font-bold">{formatMovementId(movimiento.id)}</span>
           </div>
           <div className="flex items-center gap-2">
-            {tipoIcon}
+            {iconType}
             <span className="font-medium text-muted-foreground">Tipo:</span>{" "}
-            {movimiento.tipo}
+            {textType}
           </div>
         </div>
 
@@ -62,7 +67,7 @@ export function MovementDetailModal({
           <div className="flex items-center gap-2">
             <PackageOpen className="h-4 w-4" />
             <span className="font-medium text-muted-foreground">Producto:</span>{" "}
-            {movimiento.producto_nombre}
+            {movimiento.producto_nombre || movimiento.producto_id}
           </div>
 
           <div className="flex items-center gap-2">
@@ -86,14 +91,14 @@ export function MovementDetailModal({
           <div className="flex items-center gap-2">
             <CalendarDays className="h-4 w-4" />
             <span className="font-medium text-muted-foreground">Fecha:</span>{" "}
-            {fechaFormateada}
+            {formattedMovementDate}
           </div>
         </div>
 
         <div className="flex justify-end pt-4">
           <Button className="flex-1 cursor-pointer" variant="outline" onClick={() => onOpenChange(false)} disabled>
             <Printer className="h-4 w-4 mr-2" />
-                    Imprimir
+            Imprimir
           </Button>
         </div>
       </div>
