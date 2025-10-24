@@ -22,7 +22,7 @@ export function MovementsSection({ setActiveTab }: { setActiveTab: (value: strin
 
   const filteredMovements = movements.filter((mov) =>
     mov.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    obtenerNombreProducto(mov.producto_id).toLowerCase().includes(searchTerm.toLowerCase()) ||
+    getProductName(mov.producto_id).toLowerCase().includes(searchTerm.toLowerCase()) ||
     mov.usuario.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
@@ -37,7 +37,7 @@ export function MovementsSection({ setActiveTab }: { setActiveTab: (value: strin
     setModalOpen(true)
   }
 
-  function obtenerNombreProducto(id: string): string {
+  function getProductName(id: string): string {
     const producto = productsList.find(p => p.id === id)
     return producto?.nombre || "Producto desconocido"
   }
@@ -124,7 +124,7 @@ export function MovementsSection({ setActiveTab }: { setActiveTab: (value: strin
                           {mov.tipo_movimiento === "entrada" ? "Entrada" : "Salida"}
                         </Badge>
                       </div>
-                      <p className="text-muted-foreground">{obtenerNombreProducto(mov.producto_id)}</p>
+                      <p className="text-muted-foreground">{getProductName(mov.producto_id)}</p>
                       <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <Calendar className="h-4 w-4" />
@@ -139,7 +139,7 @@ export function MovementsSection({ setActiveTab }: { setActiveTab: (value: strin
                     <Button onClick={() => {
                       const nameMovement = {
                         ...mov,
-                        producto_nombre: obtenerNombreProducto(mov.producto_id)
+                        producto_nombre: getProductName(mov.producto_id)
                       }
                       setDetailOpen(true);
                       setSelectedMovement(nameMovement);
