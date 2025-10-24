@@ -1,5 +1,7 @@
-import { supabase } from "@/lib/supabaseClient"
+import { createClient } from "@/lib/supabase/client"
 import type { Producto } from "@/types/products"
+
+const supabase = createClient();
 
 export async function listar_productos(): Promise<Producto[]> {
   const { data, error } = await supabase

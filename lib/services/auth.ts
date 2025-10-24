@@ -1,23 +1,18 @@
-import { supabase } from "@/lib/supabaseClient";
 import { mapAuthError } from "@/lib/errors/authErrors";
+import { createClient } from "@/lib/supabase/client"
 
+
+/**
+ * Inicia sesión con email y password usando Supabase Auth
+ * La sesión se guarda automáticamente en localStorage por Supabase
+ */
 export async function loginWithEmail(email: string, password: string) {
   try {
+    const supabase = createClient()
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       const message = mapAuthError(error);
       return { data: null, error: message };
-    }
-
-    const token = data?.session?.access_token;
-    if (token) {
-      try {
-        await fetch("/api/auth/session", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ access_token: token }),
-        });
-      } catch {}
     }
 
     return { data, error: null };
@@ -28,14 +23,14 @@ export async function loginWithEmail(email: string, password: string) {
 }
 
 /**
- * Cierra sesión y limpia la cookie en el backend
+ * Cierra sesión del usuario actual
+ * Elimina la sesión de localStorage automáticamente
  */
 export async function logoutFromApp() {
   try {
+    const supabase = createClient()
     await supabase.auth.signOut();
-  } catch {}
-
-  try {
-    await fetch("/api/auth/logout", { method: "POST" });
-  } catch {}
+  } catch (error) {
+    console.error("Error al cerrar sesión:", error);
+  }
 }

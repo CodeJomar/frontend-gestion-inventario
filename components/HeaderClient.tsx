@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Package, Users, CircleUserRound, LogIn, LogOut } from "lucide-react";
+import { Package, CircleUserRound, LogIn, LogOut } from "lucide-react";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useRouter } from "next/navigation"
 
@@ -14,6 +14,14 @@ export default function HeaderClient() {
   const { user, logout } = useAuth();
   const router = useRouter()
   const [loggingOut, setLoggingOut] = useState(false)
+
+  async function handleLogout() {
+    setLoggingOut(true)
+
+    router.push("/auth/login")
+    await logout()
+    setLoggingOut(false)
+  }
 
   return (
     <header className="border-b bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/50">
@@ -29,8 +37,8 @@ export default function HeaderClient() {
           </div>
 
           <div className="flex items-center space-x-4">
-
-            {user && !loggingOut ? (
+            {user ? (
+              <>
               <div
                 className="flex text-neutral-500 items-center gap-2 px-3 py-1 rounded bg-transparent"
                 aria-hidden="true"
@@ -38,15 +46,8 @@ export default function HeaderClient() {
                 <CircleUserRound className="h-5 w-5" />
                 <span className="text-sm">{user.user_metadata?.full_name ?? user.email}</span>
               </div>
-            ): null}
-
-            {user && !loggingOut ? (
               <Button
-                onClick={async () => {
-                  setLoggingOut(true);
-                  await logout();
-                  router.push("/auth/login");
-                }}
+                onClick={handleLogout}
                 size="sm"
                 className="cursor-pointer bg-destructive"
                 disabled={loggingOut}
@@ -63,6 +64,7 @@ export default function HeaderClient() {
                   </>
                 )}
               </Button>
+              </>
             ) : (
               <Link href="/auth/login" className="cursor-pointer">
                 <Button size="sm" className="cursor-pointer">
