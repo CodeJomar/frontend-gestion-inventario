@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { createClient } from "@/lib/supabase/client"
 import type { User } from "@supabase/supabase-js";
 
 /**
@@ -10,6 +10,7 @@ import type { User } from "@supabase/supabase-js";
  * @returns { user, loading } - Usuario actual y estado de carga
  */
 export function useUser() {
+  const supabase = createClient();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 

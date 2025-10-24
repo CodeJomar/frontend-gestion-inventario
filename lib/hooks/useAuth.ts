@@ -1,8 +1,8 @@
 "use client";
-
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
 import { loginWithEmail, logoutFromApp } from "@/lib/services/auth";
+import type { User, Session } from "@supabase/supabase-js"
+import { createClient } from "@/lib/supabase/client";
 
 /**
  * Hook de autenticación
@@ -13,13 +13,16 @@ export function useAuth() {
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const supabase = createClient();
 
   useEffect(() => {
-    const { data: listener } = supabase.auth.onAuthStateChange((_, session) => {
+    // Escucha cambios en el estado de autenticación
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
       setUser(session?.user ?? null);
       setSession(session ?? null);
     });
 
+    // Obtiene sesión actual
     supabase.auth
       .getSession()
       .then(({ data }) => {
@@ -33,9 +36,9 @@ export function useAuth() {
       .finally(() => setLoading(false));
 
     return () => {
-      listener.subscription.unsubscribe();
+      subscription.unsubscribe();
     };
-  }, []);
+  }, [supabase]);
 
   async function login(email: string, password: string) {
     setLoading(true);
@@ -51,9 +54,6 @@ export function useAuth() {
     return { data, error };
   }
 
-  /**
-  * Cierra sesión y limpia estados locales
-  */
   async function logout() {
     await logoutFromApp();
   }

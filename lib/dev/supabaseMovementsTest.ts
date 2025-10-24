@@ -1,5 +1,7 @@
-import { supabase } from "@/lib/supabaseClient"
+import { createClient } from "@/lib/supabase/client"
 import type { Movimiento } from "@/types/movements"
+
+const supabase = createClient();
 
 export async function listar_movimientos(): Promise<Movimiento[]> {
   const { data, error } = await supabase

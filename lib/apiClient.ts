@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabaseClient";
+import { createClient } from "@/lib/supabase/client"
 
 /**
  * Realiza una solicitud HTTP con token de Supabase.
@@ -11,8 +11,13 @@ import { supabase } from "@/lib/supabaseClient";
 
 export async function apiFetch(path: string, options: RequestInit = {}) {
   const base = process.env.NEXT_PUBLIC_API_URL ?? "";
+  const supabase = createClient();
+  
+  // Obtener token de acceso de Supabase
   const { data } = await supabase.auth.getSession();
   const token = data?.session?.access_token;
+
+  // Configurar headers y realizar solicitud
   const headers = {
     "Content-Type": "application/json",
     ...(options.headers ?? {}),

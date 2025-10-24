@@ -18,7 +18,12 @@ export default function AuthPage() {
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     const result = await login(email, password);
-    if (!result.error) router.push("/");
+
+    if (!result.error) {
+      const searchParams = new URLSearchParams(window.location.search);
+      const redirectTo = searchParams.get("redirectTo") || "/";
+      router.push(redirectTo);
+    }
   }
 
   return (
