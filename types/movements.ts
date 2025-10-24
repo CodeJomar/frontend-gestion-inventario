@@ -2,10 +2,13 @@ export type Movimiento = {
   id: string
   tipo_movimiento: "entrada" | "salida"
   producto_id: string
+  producto_nombre?: string
   cantidad: number
-  motivo: string
+  motivo: "venta" | "devolución" | "reposición" | "ajuste"
   usuario: string
   fecha: string
+  created_at?: string
+  modified_at?: string
 }
 
 export type MovimientoCreado = {

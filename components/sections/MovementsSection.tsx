@@ -42,6 +42,10 @@ export function MovementsSection({ setActiveTab }: { setActiveTab: (value: strin
     return producto?.nombre || "Producto desconocido"
   }
 
+  function formatMovementId(id: string): string {
+    return `MOV00-${id.slice(0, 6)}`
+  }
+
   return (
     <div className="space-y-6">
 
@@ -115,7 +119,7 @@ export function MovementsSection({ setActiveTab }: { setActiveTab: (value: strin
                     </div>
                     <div>
                       <div className="flex items-center gap-3 mb-1">
-                        <h3 className="font-semibold text-lg">{mov.id}</h3>
+                        <h3 className="font-semibold text-lg">{formatMovementId(mov.id)}</h3>
                         <Badge variant={mov.tipo_movimiento === "entrada" ? "default" : "destructive"}>
                           {mov.tipo_movimiento === "entrada" ? "Entrada" : "Salida"}
                         </Badge>
@@ -132,7 +136,14 @@ export function MovementsSection({ setActiveTab }: { setActiveTab: (value: strin
                   </div>
 
                   <div className="flex flex-col items-center p-4 gap-6">
-                    <Button onClick={() => { setDetailOpen(true); setSelectedMovement(mov); }} variant="outline" size="sm" className="w-full cursor-pointer">
+                    <Button onClick={() => {
+                      const nameMovement = {
+                        ...mov,
+                        producto_nombre: obtenerNombreProducto(mov.producto_id)
+                      }
+                      setDetailOpen(true);
+                      setSelectedMovement(nameMovement);
+                    }} variant="outline" size="sm" className="w-full cursor-pointer">
                       <Eye className="h-4 w-4 mr-2" />
                       Ver Detalles
                     </Button>
