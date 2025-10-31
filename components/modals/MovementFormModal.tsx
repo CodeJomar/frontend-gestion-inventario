@@ -102,7 +102,7 @@ export function MovementFormModal({
                 type="button"
                 className="cursor-pointer"
                 size="sm"
-                onClick={() => setActiveTab("products")}
+                onClick={() => setActiveTab("productos")}
               >
                 Agregar producto
               </Button>

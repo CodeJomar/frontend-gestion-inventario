@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { TrendingUp, TrendingDown, BarChart3, PieChart, Download, Calendar, Package, AlertTriangle, ArrowDownCircle, ArrowUpCircle } from "lucide-react"
 
-export function ReportsSection() {
+export default function page() {
 
   const availableReports = [
     {

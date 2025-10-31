@@ -1,12 +1,8 @@
 "use client"
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { DashboardSection } from "@/components/sections/DashboardSection"
 import { ProductsSection } from "@/components/sections/ProductsSection"
-import { MovementsSection } from "@/components/sections/MovementsSection"
-import { ReportsSection } from "@/components/sections/ReportsSection"
 import { ArrowDownCircle, BarChart3, Package, TrendingUp, Users } from "lucide-react"
-import { AdminUsersSection } from "./sections/AdminUsersSection"
 import { useState } from "react"
 
 export default function InventorySystem() {
@@ -55,11 +51,6 @@ export default function InventorySystem() {
         <TabsContent value="reports">
           <ReportsSection />
         </TabsContent>
-        {isAdmin && (
-          <TabsContent value="users">
-            <AdminUsersSection />
-          </TabsContent>
-        )}
       </Tabs>
     </main>
   )

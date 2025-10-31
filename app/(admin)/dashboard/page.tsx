@@ -7,10 +7,10 @@ import { Package, AlertTriangle, BarChart3, ArrowDownCircle, } from "lucide-reac
 import { mockProducts } from "@/data/mockProducts"
 import { useProducts } from "@/lib/hooks/useProducts"
 import { useMovements } from "@/lib/hooks/useMovements"
-import { Skeleton } from "../ui/skeleton"
+import { Skeleton } from "@/components/ui/skeleton"
 
 
-export function DashboardSection() {
+export default function page() {
 
   const STOCK_MINIMO_GLOBAL = 5
   const { productsList, loading: loadingProducts } = useProducts()

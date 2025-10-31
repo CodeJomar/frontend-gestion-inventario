@@ -9,7 +9,7 @@ import { UserFormModal } from "@/components/modals/UserFormModal"
 import { mockUsers } from "@/data/mockUsers"
 import type { Usuario } from "@/types/users"
 
-export function AdminUsersSection() {
+export default function page() {
   const [users, setUsers] = useState<Usuario[]>(mockUsers)
   const [query, setQuery] = useState("")
 

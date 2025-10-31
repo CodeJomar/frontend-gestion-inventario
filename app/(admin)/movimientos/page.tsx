@@ -8,14 +8,16 @@ import { Badge } from "@/components/ui/badge"
 import { ArrowDownCircle, ArrowUpCircle, Search, Filter, Calendar, Eye, Download, Plus } from "lucide-react"
 import { MovementFormModal } from "@/components/modals/MovementFormModal"
 import { Movimiento, MovimientoCreado } from "@/types/movements"
-import { MovementDetailModal } from "../modals/MovementDetailModal"
+import { MovementDetailModal } from "@/components/modals/MovementDetailModal"
 import { useProducts } from "@/lib/hooks/useProducts"
 import { createMovement } from "@/lib/api/movements"
 import { useMovements } from "@/lib/hooks/useMovements"
-import { Skeleton } from "../ui/skeleton"
+import { Skeleton } from "@/components/ui/skeleton"
+import { useRouter } from "next/navigation"
 
 
-export function MovementsSection({ setActiveTab }: { setActiveTab: (value: string) => void }) {
+export default function page() {
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("")
   const { productsList } = useProducts()
   const { movements, loading, loadMovements } = useMovements()
@@ -185,7 +187,7 @@ export function MovementsSection({ setActiveTab }: { setActiveTab: (value: strin
             }
           }
         }}
-        setActiveTab={setActiveTab}
+        setActiveTab={(page: string) => {router.push(`/${page}`)}}
       />
       <MovementDetailModal
         open={detailOpen}

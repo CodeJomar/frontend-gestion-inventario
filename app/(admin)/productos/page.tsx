@@ -28,7 +28,7 @@ export const categorias = [
 
 export const tipos = ["electrodomestico", "accesorio", "consumible"]
 
-export function ProductsSection() {
+export default function page() {
   const { productsList, loading, loadProducts } = useProducts()
   const [searchTerm, setSearchTerm] = useState("")
 
