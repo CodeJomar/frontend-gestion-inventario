@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server"
 import { MovementsErrors } from "@/lib/errors/movementsErrors"
 
-const FASTAPI_URL = "http://127.0.0.1:8000/movimientos"
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const FASTAPI_URL = `${API_URL}/movimientos`;
 
 export async function GET() {
   try {
