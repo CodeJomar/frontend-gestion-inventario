@@ -1,4 +1,5 @@
 import type { Producto } from "@/types/products"
+import { createApiClient } from "@/lib/services/axios"
 
 export async function fetchProducts(): Promise<Producto[]> {
   const res = await fetch("/api/products")
@@ -58,5 +59,29 @@ export async function deleteProduct(id: string): Promise<string | null> {
     return await res.json()
   } else {
     return await res.text()
+  }
+}
+
+// Activar producto (PUT /productos/{id}/activar)
+export async function activarProducto(id: string): Promise<any> {
+  try {
+    const api = await createApiClient()
+    const { data } = await api.put(`/productos/${id}/activar`)
+    return data
+  } catch (error: any) {
+    console.error("Error activarProducto:", error?.response || error)
+    throw new Error(error?.response?.data?.mensaje || "Error al activar producto")
+  }
+}
+
+// Desactivar producto (PUT /productos/{id}/desactivar)
+export async function desactivarProducto(id: string): Promise<any> {
+  try {
+    const api = await createApiClient()
+    const { data } = await api.put(`/productos/${id}/desactivar`)
+    return data
+  } catch (error: any) {
+    console.error("Error desactivarProducto:", error?.response || error)
+    throw new Error(error?.response?.data?.mensaje || "Error al desactivar producto")
   }
 }

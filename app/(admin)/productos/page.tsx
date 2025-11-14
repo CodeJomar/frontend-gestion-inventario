@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Search, Filter, Plus, Edit, Trash2, Package, PinOff } from "lucide-react"
 import { ProductFormModal } from "@/components/modals/ProductFormModal"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
+import { Loader2Icon } from "lucide-react"
 import { createProduct, fetchProducts, updateProduct } from "@/lib/api/products"
 import { Producto } from "@/types/products"
 import { useProducts } from "@/lib/hooks/useProducts"
@@ -29,7 +31,7 @@ export const categorias = [
 export const tipos = ["electrodomestico", "accesorio", "consumible"]
 
 export default function page() {
-  const { productsList, loading, loadProducts } = useProducts()
+  const { productsList, loading, loadProducts, actionLoadingIds, activarProductoById, desactivarProductoById } = useProducts()
   const [searchTerm, setSearchTerm] = useState("")
 
   const filteredProducts = productsList.filter(
@@ -40,6 +42,9 @@ export default function page() {
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState<"create" | "edit">("create")
   const [selectedProduct, setSelectedProduct] = useState<Producto | null>(null)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [confirmProduct, setConfirmProduct] = useState<Producto | null>(null)
+  const [confirmAction, setConfirmAction] = useState<"desactivar" | "activar" | null>(null)
 
   function handleAddProduct() {
     setModalMode("create")
@@ -51,6 +56,29 @@ export default function page() {
     setModalMode("edit")
     setSelectedProduct(product)
     setModalOpen(true)
+  }
+
+  function openConfirm(product: Producto, action: "desactivar" | "activar") {
+    setConfirmProduct(product)
+    setConfirmAction(action)
+    setConfirmOpen(true)
+  }
+
+  async function handleConfirmAction() {
+    if (!confirmProduct || !confirmAction) return
+    try {
+      if (confirmAction === "desactivar") {
+        await desactivarProductoById(confirmProduct.id)
+      } else {
+        await activarProductoById(confirmProduct.id)
+      }
+    } catch (error) {
+      console.error("Confirm action error:", error)
+    } finally {
+      setConfirmOpen(false)
+      setConfirmProduct(null)
+      setConfirmAction(null)
+    }
   }
 
   return (
@@ -101,14 +129,17 @@ export default function page() {
                 : "En Stock"
 
           return (
-            <Card key={product.id} className="hover:shadow-md transition-shadow">
+            <Card
+              key={product.id}
+              className={`hover:shadow-md transition-shadow ${((product as any).estado === false) ? 'opacity-60 filter grayscale' : ''}`}
+            >
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-4">
                     <img
                       src={product.imagen_url || "/images/default-product.jpg"}
                       alt={product.nombre}
-                      className="w-25 h-25 rounded-lg object-cover bg-muted"
+                      className={`w-25 h-25 rounded-lg object-cover bg-muted ${((product as any).estado === false) ? 'opacity-60' : ''}`}
                     />
                     <div>
                       <CardTitle className="text-base">{product.nombre}</CardTitle>
@@ -140,9 +171,19 @@ export default function page() {
                     <Edit className="h-4 w-4 mr-2" />
                     Editar
                   </Button>
-                  <Button variant="outline" size="sm" className="flex-1 bg-transparent cursor-pointer py-5" disabled>
-                    <PinOff className="h-4 w-4 mr-2" />
-                    Deshabilitar
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 bg-transparent cursor-pointer py-5"
+                    onClick={() => openConfirm(product, (product as any).estado === false ? "activar" : "desactivar")}
+                    disabled={!!actionLoadingIds[product.id]}
+                  >
+                    {actionLoadingIds[product.id] ? (
+                      <Loader2Icon className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <PinOff className="h-4 w-4 mr-2" />
+                    )}
+                    {(product as any).estado === false ? "Activar" : "Desactivar"}
                   </Button>
                 </div>
               </CardContent>
@@ -160,6 +201,31 @@ export default function page() {
           </CardContent>
         </Card>
       )}
+      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{confirmAction === "desactivar" ? "Desactivar producto" : "Activar producto"}</DialogTitle>
+            <DialogDescription>
+              {confirmProduct ? `¿Deseas ${confirmAction} el producto "${confirmProduct.nombre}"?` : "¿Continuar?"}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setConfirmOpen(false)}>Cancelar</Button>
+              <Button
+                onClick={handleConfirmAction}
+                disabled={confirmProduct ? !!actionLoadingIds[confirmProduct.id] : false}
+              >
+                {confirmProduct && actionLoadingIds[confirmProduct.id] ? (
+                  <Loader2Icon className="h-4 w-4 mr-2 animate-spin" />
+                ) : null}
+                {confirmAction === "desactivar" ? "Desactivar" : "Activar"}
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <ProductFormModal
         open={modalOpen}
         onOpenChange={setModalOpen}
