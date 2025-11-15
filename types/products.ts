@@ -10,4 +10,5 @@ export type Producto = {
   imagen_url: string
   created_at: string
   updated_at: string
+  estado: boolean
 }
