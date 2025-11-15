@@ -14,7 +14,7 @@ import { createMovement } from "@/lib/api/movements"
 import { useMovements } from "@/lib/hooks/useMovements"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useRouter } from "next/navigation"
-
+import { downloadMovementPDF } from "@/lib/api/movementPdf"
 
 export default function page() {
   const router = useRouter();
@@ -22,10 +22,12 @@ export default function page() {
   const { productsList } = useProducts()
   const { movements, loading, loadMovements } = useMovements()
 
+  const activeProducts = productsList.filter(p => p.estado === true)
+
   const filteredMovements = movements.filter((mov) =>
     mov.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
     getProductName(mov.producto_id).toLowerCase().includes(searchTerm.toLowerCase()) ||
-    mov.usuario.toLowerCase().includes(searchTerm.toLowerCase())
+    (mov.created_by ? getCreatedByName(mov.created_by).toLowerCase().includes(searchTerm.toLowerCase()) : false)
   )
 
   const [modalOpen, setModalOpen] = useState(false)
@@ -42,6 +44,13 @@ export default function page() {
   function getProductName(id: string): string {
     const producto = productsList.find(p => p.id === id)
     return producto?.nombre || "Producto desconocido"
+  }
+
+  function getCreatedByName(createBy: any): string {
+    if (typeof createBy === "object" && createBy.nombre) {
+      return createBy.nombre
+    }
+    return typeof createBy === "string" ? createBy : "Usuario desconocido"
   }
 
   function formatMovementId(id: string): string {
@@ -141,7 +150,8 @@ export default function page() {
                     <Button onClick={() => {
                       const nameMovement = {
                         ...mov,
-                        producto_nombre: getProductName(mov.producto_id)
+                        producto_nombre: getProductName(mov.producto_id),
+                        created_by_name: getCreatedByName(mov.created_by)
                       }
                       setDetailOpen(true);
                       setSelectedMovement(nameMovement);
@@ -149,8 +159,12 @@ export default function page() {
                       <Eye className="h-4 w-4 mr-2" />
                       Ver Detalles
                     </Button>
-                    <Button variant="outline" size="sm" className="w-full cursor-pointer" disabled>
-                      <Download className="h-4 w-4 mr-2" />
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full cursor-pointer" 
+                      onClick={() => downloadMovementPDF(mov.id)}>
+                        <Download className="h-4 w-4 mr-2" />
                       Descargar PDF
                     </Button>
                   </div>
@@ -175,7 +189,7 @@ export default function page() {
       <MovementFormModal
         open={modalOpen}
         onOpenChange={setModalOpen}
-        productos={productsList.map(p => ({ id: p.id, nombre: p.nombre }))}
+        productos={activeProducts.map(p => ({ id: p.id, nombre: p.nombre }))}
         onSubmit={async (data: MovimientoCreado) => {
           if (modalMode === "create") {
             try {

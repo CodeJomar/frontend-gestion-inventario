@@ -27,7 +27,7 @@ export function MovementFormModal({
     tipo_movimiento: "",
     cantidad: 1,
     motivo: "",
-    usuario: "",
+    created_by: "",
   })
 
   const motivosEntrada = [
@@ -153,12 +153,12 @@ export function MovementFormModal({
             ))}
           </select>
         </div>
-
+        {/*
         <div className="space-y-2">
           <Label htmlFor="usuario">Usuario</Label>
           <select
-            name="usuario"
-            value={form.usuario}
+            name="create_by"
+            value={form.created_by}
             onChange={handleChange}
             required
             className="w-full px-3 py-2 border rounded-md text-sm shadow-sm"
@@ -169,7 +169,7 @@ export function MovementFormModal({
             ))}
           </select>
         </div>
-
+        */}
         <div className="flex justify-end gap-8 pt-4">
           <Button className="cursor-pointer px-8" type="button" variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar

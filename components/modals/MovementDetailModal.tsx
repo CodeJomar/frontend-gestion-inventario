@@ -85,7 +85,7 @@ export function MovementDetailModal({
           <div className="flex items-center gap-2">
             <User className="h-4 w-4" />
             <span className="font-medium text-muted-foreground">Usuario:</span>{" "}
-            {movimiento.usuario}
+            {movimiento.created_by || "Desconocido"}
           </div>
 
           <div className="flex items-center gap-2">
