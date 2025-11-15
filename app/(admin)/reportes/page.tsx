@@ -4,45 +4,44 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { TrendingUp, TrendingDown, BarChart3, PieChart, Download, Calendar, Package, AlertTriangle, ArrowDownCircle, ArrowUpCircle } from "lucide-react"
+import { ReportesAPI } from "@/lib/api/reportes";
 
 export default function page() {
 
   const availableReports = [
     {
-      name: "Reporte de Inventario Completo",
-      description: "Estado detallado de todos los productos en stock",
-      type: "PDF",
-      lastGenerated: "Hace 2 horas",
-      category: "Inventario",
-    },
-    {
-      name: "Análisis de Movimientos Mensual",
-      description: "Resumen de entradas y salidas por producto",
+      name: "Reporte de Productos Activos",
+      description: "Estado detallado de todos los productos activos.",
       type: "Excel",
-      lastGenerated: "Ayer",
+      // lastGenerated: "Hace 2 horas",
       category: "Inventario",
+      download: ReportesAPI.productosActivos,
     },
     {
-      name: "Productos con Bajo Stock",
-      description: "Lista de productos que requieren reabastecimiento",
-      type: "PDF",
-      lastGenerated: "Hace 1 hora",
-      category: "Alertas",
+      name: "Reporte de Movimientos de Entrada",
+      description: "Resumen de los movimientos de tipo entrada por producto.",
+      type: "Excel",
+      // lastGenerated: "Ayer",
+      category: "Transacciones",
+      download: ReportesAPI.movimientosEntrada,
     },
     {
-      name: "Historial de Movimientos",
-      description: "Registro completo de entradas y salidas",
-      type: "CSV",
-      lastGenerated: "Hace 3 días",
+      name: "Reporte de Productos Inactivos",
+      description: "Estado detallado de todos los productos inactivos.",
+      type: "Excel",
+      // lastGenerated: "Hace 1 hora",
       category: "Inventario",
+      download: ReportesAPI.productosInactivos,
     },
     {
-      name: "Reporte de Proveedores",
-      description: "Evaluación de rendimiento de proveedores",
-      type: "PDF",
-      lastGenerated: "Hace 2 días",
-      category: "Proveedores",
+      name: "Reporte de Movimientos de Salida",
+      description: "Resumen de los movimientos de tipo salida por producto.",
+      type: "Excel",
+      // lastGenerated: "Hace 3 días",
+      category: "Transacciones",
+      download: ReportesAPI.movimientosSalida,
     },
+    
   ]
 
   return (
@@ -86,14 +85,19 @@ export default function page() {
                         </Badge>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="cursor-pointer">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="cursor-pointer"
+                      onClick={report.download}
+                      >
                       <Download className="h-3 w-3 mr-1" />
                       Descargar
                     </Button>
                   </div>
-                  <p className="text-xs text-muted-foreground">
+                  {/*<p className="text-xs text-muted-foreground">
                     Última generación: {report.lastGenerated}
-                  </p>
+                  </p>*/}
                 </CardContent>
               </Card>
             ))}
