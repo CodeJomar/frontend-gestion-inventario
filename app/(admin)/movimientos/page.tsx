@@ -14,7 +14,7 @@ import { createMovement } from "@/lib/api/movements"
 import { useMovements } from "@/lib/hooks/useMovements"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useRouter } from "next/navigation"
-
+import { downloadMovementPDF } from "@/lib/api/movementPdf"
 
 export default function page() {
   const router = useRouter();
@@ -159,8 +159,12 @@ export default function page() {
                       <Eye className="h-4 w-4 mr-2" />
                       Ver Detalles
                     </Button>
-                    <Button variant="outline" size="sm" className="w-full cursor-pointer" disabled>
-                      <Download className="h-4 w-4 mr-2" />
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full cursor-pointer" 
+                      onClick={() => downloadMovementPDF(mov.id)}>
+                        <Download className="h-4 w-4 mr-2" />
                       Descargar PDF
                     </Button>
                   </div>
