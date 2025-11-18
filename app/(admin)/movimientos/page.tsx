@@ -81,23 +81,23 @@ export default function page() {
           </div>
           <div className="flex gap-4">
 
-            <Select onValueChange={(value: string) => setFilterTipo(value)}>
+            <Select value={filterTipo} onValueChange={(value: string) => setFilterTipo(value)}>
               <SelectTrigger className="w-48">
                 <SelectValue placeholder="Filtrar por tipo" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todos">Todos</SelectItem>
+                <SelectItem value="todos">Filtrar por tipo</SelectItem>
                 <SelectItem value="entrada">Entrada</SelectItem>
                 <SelectItem value="salida">Salida</SelectItem>
               </SelectContent>
             </Select>
 
-            <Select onValueChange={(value: string) => setFilterUsuario(value)}>
+            <Select value={filterUsuario} onValueChange={(value: string) => setFilterUsuario(value)}>
               <SelectTrigger className="w-48">
                 <SelectValue placeholder="Filtrar por usuario" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todos">Todos</SelectItem>
+                <SelectItem value="todos">Filtrar por usuario</SelectItem>
                 {[...new Set(movements.map((mov) => getCreatedByName(mov.created_by)))].map((usuario) => (
                   <SelectItem key={usuario} value={usuario}>
                     {usuario}
