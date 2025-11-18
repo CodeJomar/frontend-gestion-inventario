@@ -15,6 +15,7 @@ import { useMovements } from "@/lib/hooks/useMovements"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useRouter } from "next/navigation"
 import { downloadMovementPDF } from "@/lib/api/movementPdf"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export default function page() {
   const router = useRouter();
@@ -24,11 +25,20 @@ export default function page() {
 
   const activeProducts = productsList.filter(p => p.estado === true)
 
-  const filteredMovements = movements.filter((mov) =>
-    mov.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    getProductName(mov.producto_id).toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (mov.created_by ? getCreatedByName(mov.created_by).toLowerCase().includes(searchTerm.toLowerCase()) : false)
-  )
+  const [filterEstado, setFilterEstado] = useState<string>("todos");
+  const [filterCategoria, setFilterCategoria] = useState<string>("todos");
+  const [filterUsuario, setFilterUsuario] = useState<string>("todos");
+  const [filterTipo, setFilterTipo] = useState<string>("todos")
+
+  const filteredMovements = movements.filter((mov) => {
+    const matchesSearchTerm =
+      mov.id.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesUsuario =
+      filterUsuario === "todos" ||
+      (mov.created_by && getCreatedByName(mov.created_by).toLowerCase() === filterUsuario.toLowerCase());
+    const matchesTipo = filterTipo === "todos" || mov.tipo_movimiento === filterTipo;
+    return matchesSearchTerm && matchesUsuario && matchesTipo;
+  });
 
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState<"create" | "edit">("create")
@@ -58,23 +68,61 @@ export default function page() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-12">
 
       <div className="flex flex-col sm:flex-row gap-4 justify-between">
         <div className="flex flex-1 gap-4">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
-              placeholder="Buscar movimientos..."
+              placeholder="Buscar movimientos por ID"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
             />
           </div>
-          <Button variant="outline" size="sm" className="cursor-pointer">
-            <Filter className="h-4 w-4 mr-2" />
-            Filtros
-          </Button>
+          <div className="flex gap-4">
+
+            <Select onValueChange={(value: string) => setFilterTipo(value)}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Filtrar por tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos</SelectItem>
+                <SelectItem value="entrada">Entrada</SelectItem>
+                <SelectItem value="salida">Salida</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select onValueChange={(value: string) => setFilterUsuario(value)}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Filtrar por usuario" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos</SelectItem>
+                {[...new Set(movements.map((mov) => getCreatedByName(mov.created_by)))].map((usuario) => (
+                  <SelectItem key={usuario} value={usuario}>
+                    {usuario}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Button
+              variant="secondary"
+              size="sm"
+              className="cursor-pointer"
+              onClick={() => {
+                setFilterEstado("todos");
+                setFilterCategoria("todos");
+                setFilterUsuario("todos");
+                setFilterTipo("todos");
+                setSearchTerm("");
+              }}
+            >
+              Ver Todo
+            </Button>
+          </div>
         </div>
         <Button className="cursor-pointer" onClick={handleAddMovement}>
           <Plus className="h-4 w-4 mr-2" />
@@ -159,12 +207,12 @@ export default function page() {
                       <Eye className="h-4 w-4 mr-2" />
                       Ver Detalles
                     </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="w-full cursor-pointer" 
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full cursor-pointer"
                       onClick={() => downloadMovementPDF(mov.id)}>
-                        <Download className="h-4 w-4 mr-2" />
+                      <Download className="h-4 w-4 mr-2" />
                       Descargar PDF
                     </Button>
                   </div>
@@ -201,7 +249,7 @@ export default function page() {
             }
           }
         }}
-        setActiveTab={(page: string) => {router.push(`/${page}`)}}
+        setActiveTab={(page: string) => { router.push(`/${page}`) }}
       />
       <MovementDetailModal
         open={detailOpen}
