@@ -33,10 +33,10 @@ export const tipos = ["electrodomestico", "accesorio", "consumible"]
 
 export default function page() {
   const { productsList, loading, loadProducts, actionLoadingIds, activarProductoById, desactivarProductoById } = useProducts()
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState("")
 
-  const [filterEstado, setFilterEstado] = useState<"activo" | "inactivo" | "todos">("todos");
-  const [filterCategoria, setFilterCategoria] = useState<string>("todos");
+  const [filterEstado, setFilterEstado] = useState<"activo" | "inactivo" | "todos">("todos")
+  const [filterCategoria, setFilterCategoria] = useState<string>("todos")
 
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState<"create" | "edit">("create")
@@ -48,17 +48,17 @@ export default function page() {
   const filteredProducts = productsList.filter((product) => {
     const matchesSearchTerm =
       product.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.categoria.toLowerCase().includes(searchTerm.toLowerCase());
+      product.categoria.toLowerCase().includes(searchTerm.toLowerCase())
 
     const matchesEstado =
       filterEstado === "todos" ||
       (filterEstado === "activo" && product.estado !== false) ||
-      (filterEstado === "inactivo" && product.estado === false);
+      (filterEstado === "inactivo" && product.estado === false)
 
     const matchesCategoria =
-      filterCategoria === "todos" || product.categoria === filterCategoria;
+      filterCategoria === "todos" || product.categoria === filterCategoria
 
-    return matchesSearchTerm && matchesEstado && matchesCategoria;
+    return matchesSearchTerm && matchesEstado && matchesCategoria
   });
 
   function handleAddProduct() {

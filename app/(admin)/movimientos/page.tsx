@@ -25,19 +25,17 @@ export default function page() {
 
   const activeProducts = productsList.filter(p => p.estado === true)
 
-  const [filterEstado, setFilterEstado] = useState<string>("todos");
-  const [filterCategoria, setFilterCategoria] = useState<string>("todos");
-  const [filterUsuario, setFilterUsuario] = useState<string>("todos");
+  const [filterUsuario, setFilterUsuario] = useState<string>("todos")
   const [filterTipo, setFilterTipo] = useState<string>("todos")
 
   const filteredMovements = movements.filter((mov) => {
     const matchesSearchTerm =
-      mov.id.toLowerCase().includes(searchTerm.toLowerCase());
+      mov.id.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesUsuario =
       filterUsuario === "todos" ||
-      (mov.created_by && getCreatedByName(mov.created_by).toLowerCase() === filterUsuario.toLowerCase());
-    const matchesTipo = filterTipo === "todos" || mov.tipo_movimiento === filterTipo;
-    return matchesSearchTerm && matchesUsuario && matchesTipo;
+      (mov.created_by && getCreatedByName(mov.created_by).toLowerCase() === filterUsuario.toLowerCase())
+    const matchesTipo = filterTipo === "todos" || mov.tipo_movimiento === filterTipo
+    return matchesSearchTerm && matchesUsuario && matchesTipo
   });
 
   const [modalOpen, setModalOpen] = useState(false)
@@ -113,8 +111,6 @@ export default function page() {
               size="sm"
               className="cursor-pointer"
               onClick={() => {
-                setFilterEstado("todos");
-                setFilterCategoria("todos");
                 setFilterUsuario("todos");
                 setFilterTipo("todos");
                 setSearchTerm("");
