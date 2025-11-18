@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { mockUsers } from "@/data/mockUsers"
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
+
 
 type MovementFormModalProps = {
   open: boolean
@@ -81,21 +83,21 @@ export function MovementFormModal({
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2 border-b pb-5">
           <Label htmlFor="producto_id">Producto</Label>
-          <select
-            name="producto_id"
-            value={form.producto_id}
-            onChange={handleChange}
-            required
-            className="w-full px-3 py-2 border rounded-md text-sm shadow-sm"
-          >
-            <option value="">Selecciona un producto</option>
-            {productos.map((p) => (
-              <option key={p.id} value={p.id}>{p.nombre}</option>
-            ))}
-          </select>
+          <Select onValueChange={(value) => setForm((prev) => ({ ...prev, producto_id: value }))}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Selecciona un producto" />
+            </SelectTrigger>
+            <SelectContent>
+              {productos.map((p) => (
+                <SelectItem key={p.id} value={p.id}>
+                  {p.nombre}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           {form.producto_id === "" && (
             <div className="flex items-center justify-between pt-2">
-              <p className="text-sm italic font-semibold text-muted-foreground text-primary">
+              <p className="text-sm italic font-semibold text-primary">
                 ¿No encuentras el producto que necesitas?
               </p>
               <Button
@@ -113,17 +115,15 @@ export function MovementFormModal({
         <div className="grid grid-cols-2 gap-4 pt-4">
           <div className="space-y-2">
             <Label htmlFor="tipo_movimiento">Tipo</Label>
-            <select
-              name="tipo_movimiento"
-              value={form.tipo_movimiento}
-              onChange={handleChange}
-              required
-              className="w-full px-3 py-2 border rounded-md text-sm shadow-sm"
-            >
-              <option value="">Selecciona tipo</option>
-              <option value="entrada">Entrada</option>
-              <option value="salida">Salida</option>
-            </select>
+            <Select onValueChange={(value) => setForm((prev) => ({ ...prev, tipo_movimiento: value }))}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Selecciona tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="entrada">Entrada</SelectItem>
+                <SelectItem value="salida">Salida</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
             <Label htmlFor="cantidad">Cantidad</Label>
@@ -140,18 +140,18 @@ export function MovementFormModal({
 
         <div className="space-y-2">
           <Label htmlFor="motivo">Motivo</Label>
-          <select
-            name="motivo"
-            value={form.motivo}
-            onChange={handleChange}
-            required
-            className="w-full px-3 py-2 border rounded-md text-sm shadow-sm"
-          >
-            <option value="">Selecciona motivo</option>
-            {motivos.map((m) => (
-              <option key={m.value} value={m.value}>{m.label}</option>
-            ))}
-          </select>
+          <Select onValueChange={(value) => setForm((prev) => ({ ...prev, motivo: value }))}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Selecciona motivo" />
+            </SelectTrigger>
+            <SelectContent>
+              {motivos.map((m) => (
+                <SelectItem key={m.value} value={m.value}>
+                  {m.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         {/*
         <div className="space-y-2">
