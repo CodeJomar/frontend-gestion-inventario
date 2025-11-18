@@ -111,23 +111,23 @@ export default function page() {
             />
           </div>
           <div className="flex gap-4">
-            <Select onValueChange={(value) => setFilterEstado(value as "activo" | "inactivo" | "todos")}>
+            <Select value={filterEstado} onValueChange={(value) => setFilterEstado(value as "activo" | "inactivo" | "todos")}>
               <SelectTrigger className="w-48">
                 <SelectValue placeholder="Filtrar por estado" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todos">Todos</SelectItem>
+                <SelectItem value="todos">Filtrar por estado</SelectItem>
                 <SelectItem value="activo">Activos</SelectItem>
                 <SelectItem value="inactivo">Inactivos</SelectItem>
               </SelectContent>
             </Select>
 
-            <Select onValueChange={(value) => setFilterCategoria(value)}>
+            <Select value={filterCategoria} onValueChange={(value) => setFilterCategoria(value)}>
               <SelectTrigger className="w-48">
                 <SelectValue placeholder="Filtrar por categoría" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todos">Todas las categorías</SelectItem>
+                <SelectItem value="todos">Filtrar por categoría</SelectItem>
                 {categorias.map((categoria) => (
                   <SelectItem key={categoria} value={categoria}>
                     {categoria}
