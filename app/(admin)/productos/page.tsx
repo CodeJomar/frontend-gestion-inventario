@@ -37,7 +37,7 @@ export default function page() {
 
   const [filterEstado, setFilterEstado] = useState<"activo" | "inactivo" | "todos">("todos");
   const [filterCategoria, setFilterCategoria] = useState<string>("todos");
-  
+
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState<"create" | "edit">("create")
   const [selectedProduct, setSelectedProduct] = useState<Producto | null>(null)
@@ -97,11 +97,11 @@ export default function page() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-12">
       {/* Header Actions */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between">
         <div className="flex flex-1 gap-6">
-          <div className="relative flex-1 max-w-sm">
+          <div className="relative flex-1 max-w-xs">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
               placeholder="Buscar productos..."
