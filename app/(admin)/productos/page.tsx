@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Search, Filter, Plus, Edit, Trash2, Package, PinOff } from "lucide-react"
 import { ProductFormModal } from "@/components/modals/ProductFormModal"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
@@ -32,19 +33,33 @@ export const tipos = ["electrodomestico", "accesorio", "consumible"]
 
 export default function page() {
   const { productsList, loading, loadProducts, actionLoadingIds, activarProductoById, desactivarProductoById } = useProducts()
-  const [searchTerm, setSearchTerm] = useState("")
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredProducts = productsList.filter(
-    (product) =>
-      product.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.categoria.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const [filterEstado, setFilterEstado] = useState<"activo" | "inactivo" | "todos">("todos");
+  const [filterCategoria, setFilterCategoria] = useState<string>("todos");
+  
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState<"create" | "edit">("create")
   const [selectedProduct, setSelectedProduct] = useState<Producto | null>(null)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [confirmProduct, setConfirmProduct] = useState<Producto | null>(null)
   const [confirmAction, setConfirmAction] = useState<"desactivar" | "activar" | null>(null)
+
+  const filteredProducts = productsList.filter((product) => {
+    const matchesSearchTerm =
+      product.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.categoria.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesEstado =
+      filterEstado === "todos" ||
+      (filterEstado === "activo" && product.estado !== false) ||
+      (filterEstado === "inactivo" && product.estado === false);
+
+    const matchesCategoria =
+      filterCategoria === "todos" || product.categoria === filterCategoria;
+
+    return matchesSearchTerm && matchesEstado && matchesCategoria;
+  });
 
   function handleAddProduct() {
     setModalMode("create")
@@ -85,7 +100,7 @@ export default function page() {
     <div className="space-y-6">
       {/* Header Actions */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between">
-        <div className="flex flex-1 gap-4">
+        <div className="flex flex-1 gap-6">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
@@ -95,10 +110,44 @@ export default function page() {
               className="pl-10"
             />
           </div>
-          <Button variant="outline" size="sm" className="cursor-pointer">
-            <Filter className="h-4 w-4 mr-2" />
-            Filtros
-          </Button>
+          <div className="flex gap-4">
+            <Select onValueChange={(value) => setFilterEstado(value as "activo" | "inactivo" | "todos")}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Filtrar por estado" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos</SelectItem>
+                <SelectItem value="activo">Activos</SelectItem>
+                <SelectItem value="inactivo">Inactivos</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select onValueChange={(value) => setFilterCategoria(value)}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Filtrar por categoría" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todas las categorías</SelectItem>
+                {categorias.map((categoria) => (
+                  <SelectItem key={categoria} value={categoria}>
+                    {categoria}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              variant="secondary"
+              size="sm"
+              className="cursor-pointer"
+              onClick={() => {
+                setFilterEstado("todos");
+                setFilterCategoria("todos");
+                setSearchTerm("");
+              }}
+            >
+              Ver Todo
+            </Button>
+          </div>
         </div>
         <Button className="cursor-pointer" onClick={handleAddProduct}>
           <Plus className="h-4 w-4 mr-2" />
