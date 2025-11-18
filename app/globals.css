@@ -125,3 +125,11 @@
     @apply bg-background text-foreground;
   }
 }
+
+html {
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
