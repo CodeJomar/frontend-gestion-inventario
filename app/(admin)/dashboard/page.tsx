@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { Package, AlertTriangle, BarChart3, ArrowDownCircle, } from "lucide-react"
+import { Package, AlertTriangle, BarChart3, ArrowDownCircle, HandCoins } from "lucide-react"
 import { mockProducts } from "@/data/mockProducts"
 import { useProducts } from "@/lib/hooks/useProducts"
 import { useMovements } from "@/lib/hooks/useMovements"
@@ -18,34 +18,107 @@ export default function page() {
   const recentMovements = movements.slice(0, 5)
   const lowStockItems = productsList.filter(p => p.stock < STOCK_MINIMO_GLOBAL)
 
+  function calculatePercentageChange(current: number, previous: number): string {
+    if (previous === 0) {
+      return current === 0 ? "Sin datos" : "100%";
+    }
+    const change = ((current - previous) / previous) * 100;
+    return `${change.toFixed(2)}%`;
+  }
+
+  function getMovementsByMonth(
+    movements: { tipo_movimiento: string; fecha: string }[],
+    month: number,
+    year: number,
+    type: string
+  ): number {
+    return movements.filter(
+      (m) =>
+        m.tipo_movimiento === type &&
+        new Date(m.fecha).getMonth() === month &&
+        new Date(m.fecha).getFullYear() === year
+    ).length;
+  }
+
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+  const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+  const previousYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+
+  const currentMonthEntradas = getMovementsByMonth(movements, currentMonth, currentYear, "entrada");
+  const previousMonthEntradas = getMovementsByMonth(movements, previousMonth, previousYear, "entrada");
+  const entradasChange = calculatePercentageChange(currentMonthEntradas, previousMonthEntradas);
+
+  const currentMonthSalidas = getMovementsByMonth(movements, currentMonth, currentYear, "salida");
+  const previousMonthSalidas = getMovementsByMonth(movements, previousMonth, previousYear, "salida");
+  const salidasChange = calculatePercentageChange(currentMonthSalidas, previousMonthSalidas);
+
+  const previousMonthProducts = productsList.filter(
+    (product) => new Date(product.created_at).getMonth() === previousMonth &&
+                 new Date(product.created_at).getFullYear() === previousYear
+  ).length;
+
+  const currentMonthProducts = productsList.filter(
+    (product) => new Date(product.created_at).getMonth() === currentMonth &&
+                 new Date(product.created_at).getFullYear() === currentYear
+  ).length;
+
+  const productsChange = calculatePercentageChange(currentMonthProducts, previousMonthProducts);
+
+  const currentMonthSalesValue = movements
+    .filter(
+      (m) =>
+        m.tipo_movimiento === "salida" &&
+        new Date(m.fecha).getMonth() === currentMonth &&
+        new Date(m.fecha).getFullYear() === currentYear
+    )
+    .reduce((total, m) => {
+      const product = productsList.find((p) => p.id === m.producto_id);
+      return total + (product ? product.precio * m.cantidad : 0);
+    }, 0);
+
+  const previousMonthSalesValue = movements
+    .filter(
+      (m) =>
+        m.tipo_movimiento === "salida" &&
+        new Date(m.fecha).getMonth() === previousMonth &&
+        new Date(m.fecha).getFullYear() === previousYear
+    )
+    .reduce((total, m) => {
+      const product = productsList.find((p) => p.id === m.producto_id);
+      return total + (product ? product.precio * m.cantidad : 0);
+    }, 0);
+
+  const salesChange = calculatePercentageChange(currentMonthSalesValue, previousMonthSalesValue);
+
   const stats = [
     {
       title: "Total Productos",
-      value: productsList.reduce((acc, p) => acc + p.stock, 0).toString(),
-      change: "+X%",
+      value: productsList.length.toString(),
+      change: productsChange,
       icon: Package,
       color: "text-primary",
     },
     {
       title: "Entradas este mes",
-      value: movements.filter(m => m.tipo_movimiento === "entrada" && new Date(m.fecha).getMonth() === new Date().getMonth()).length.toString(),
-      change: "+X%",
+      value: currentMonthEntradas.toString(),
+      change: entradasChange,
       icon: BarChart3,
       color: "text-accent",
     },
     {
       title: "Salidas este mes",
-      value: movements.filter(m => m.tipo_movimiento === "salida" && new Date(m.fecha).getMonth() === new Date().getMonth()).length.toString(),
-      change: "+X%",
+      value: currentMonthSalidas.toString(),
+      change: salidasChange,
       icon: ArrowDownCircle,
       color: "text-chart-3",
     },
     {
-      title: "Stock Crítico",
-      value: lowStockItems.length.toString(),
-      change: "-X%",
-      icon: AlertTriangle,
-      color: "text-destructive",
+      title: "Valor Total de Ventas",
+      value: `S/. ${currentMonthSalesValue.toFixed(2)}`,
+      change: salesChange,
+      icon: HandCoins,
+      color: "text-secondary",
     },
   ]
 
