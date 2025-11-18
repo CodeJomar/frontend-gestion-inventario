@@ -9,6 +9,7 @@ import { UserFormModal } from "@/components/modals/UserFormModal";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createApiClient } from "@/lib/services/axios";
 import { toast } from "sonner";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type UsuarioApi = {
   id: string;
@@ -38,6 +39,8 @@ export default function UsuariosPage() {
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [selectedUser, setSelectedUser] = useState<UsuarioApi | null>(null);
   const [users, setUsers] = useState<UsuarioApi[]>([]);
+  const [filterEstado, setFilterEstado] = useState("todos");
+  const [filterRol, setFilterRol] = useState("todos");
 
   useEffect(() => {
     if (apiData) {
@@ -80,7 +83,7 @@ export default function UsuariosPage() {
       const api = await createApiClient();
       await api.put(`/usuarios/${id}`, { active: !oldValue });
       toast.success(`El usuario ha sido ${!oldValue ? "activado" : "desactivado"}`);
-      queryClient.invalidateQueries(["usuarios"]);
+      queryClient.invalidateQueries({ queryKey: ["usuarios"] });
     } catch (err: unknown) {
       setUsers((prev) => {
         const newUsers = [...prev];
@@ -96,9 +99,21 @@ export default function UsuariosPage() {
     }
   }
 
-  const filtered = users.filter((u) =>
-    `${u.nombres} ${u.apellidos} ${u.email} ${u.rol}`.toLowerCase().includes(query.trim().toLowerCase())
-  );
+  const filtered = users.filter((u) => {
+    const matchesEstado =
+      filterEstado === "todos" ||
+      (filterEstado === "activo" && u.active) ||
+      (filterEstado === "inactivo" && !u.active);
+
+    const matchesRol =
+      filterRol === "todos" || u.rol.toLowerCase() === filterRol.toLowerCase();
+
+    const matchesQuery = `${u.nombres} ${u.email} ${u.usuario}`
+      .toLowerCase()
+      .includes(query.trim().toLowerCase());
+
+    return matchesEstado && matchesRol && matchesQuery;
+  });
 
   return (
     <div className="space-y-6">
@@ -107,16 +122,49 @@ export default function UsuariosPage() {
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
-              placeholder="Buscar por nombre, correo o rol..."
+              placeholder="Buscar por nombre, correo o usuario"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="pl-10"
             />
           </div>
-          <Button variant="outline" size="sm">
-            <Filter className="h-4 w-4 mr-2" />
-            Filtros
-          </Button>
+          <div className="flex gap-4">
+
+            <Select value={filterEstado} onValueChange={(value: string) => setFilterEstado(value)}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Filtrar por Estado" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Filtrar por Estado</SelectItem>
+                <SelectItem value="activo">Activo</SelectItem>
+                <SelectItem value="inactivo">Inactivo</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={filterRol} onValueChange={(value: string) => setFilterRol(value)}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Filtrar por Rol" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Filtrar por Rol</SelectItem>
+                <SelectItem value="admin">Administrador</SelectItem>
+                <SelectItem value="empleado">Empleado</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Button
+              variant="secondary"
+              size="sm"
+              className="cursor-pointer"
+              onClick={() => {
+                setFilterRol("todos");
+                setFilterEstado("todos");
+                setQuery("");
+              }}
+            >
+              Ver Todo
+            </Button>
+          </div>
         </div>
 
         <Button onClick={handleAddUser}>
