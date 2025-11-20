@@ -13,6 +13,9 @@ export const mockProducts: Producto[] = [
     imagen_url: "",
     created_at: "2025-10-01T12:00:00Z",
     updated_at: "2025-10-01T12:00:00Z",
+    estado: true,
+    created_by: "admin@gmail.com",
+    modified_by: "admin@gmail.com",
   },
   {
     id: "2",
