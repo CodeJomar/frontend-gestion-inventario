@@ -11,6 +11,4 @@ export type Producto = {
   created_at: string
   updated_at: string
   estado: boolean
-  created_by: string
-  modified_by: string
 }

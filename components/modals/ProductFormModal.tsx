@@ -49,8 +49,6 @@ export function ProductFormModal({
     precio: 0,
     stock: 0,
     imagen_url: "",
-    created_by: "",
-    modified_by: "",
   })
   useEffect(() => {
     if (initialData) {
@@ -66,8 +64,6 @@ export function ProductFormModal({
         precio: 0,
         stock: 0,
         imagen_url: "",
-        created_by: "",
-        modified_by: "",
       })
     }
   }, [initialData])
