@@ -9,22 +9,22 @@ export function descargarExcel(url: string, nombreArchivo: string) {
 
 export const ReportesAPI = {
   productosActivos() {
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/reportes/productos/activos`;
+    const url = `${process.env.NEXT_PUBLIC_URL}/reportes/productos/activos`;
     descargarExcel(url, "productos_activos.xlsx");
   },
 
   productosInactivos() {
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/reportes/productos/inactivos`;
+    const url = `${process.env.NEXT_PUBLIC_URL}/reportes/productos/inactivos`;
     descargarExcel(url, "productos_inactivos.xlsx");
   },
 
   movimientosEntrada() {
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/reportes/movimientos/entrada`;
+    const url = `${process.env.NEXT_PUBLIC_URL}/reportes/movimientos/entrada`;
     descargarExcel(url, "movimientos_entrada.xlsx");
   },
 
   movimientosSalida() {
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/reportes/movimientos/salida`;
+    const url = `${process.env.NEXT_PUBLIC_URL}/reportes/movimientos/salida`;
     descargarExcel(url, "movimientos_salida.xlsx");
   },
 };
