@@ -47,9 +47,14 @@ export async function POST(req: Request) {
     const token = await getAccessToken();
     const email = await getUserEmail();
     const body = await req.json()
+    
+    // Set required metadata
     body.created_by = email || "desconocido";
     body.modified_by = email || "desconocido";
-    body.estado = body.estado ?? "ACTIVO";
+    body.estado = true; // Set as boolean, not string
+    
+    console.log("Sending to FastAPI:", JSON.stringify(body, null, 2));
+    
     const res = await fetch(FASTAPI_URL, {
       method: "POST",
       headers: { 
@@ -59,7 +64,9 @@ export async function POST(req: Request) {
       body: JSON.stringify(body),
     })
     if (!res.ok) {
-      console.error("FastAPI POST error:", await res.text())
+      const errorText = await res.text()
+      console.error("FastAPI POST error:", errorText)
+      console.error("Status:", res.status)
       return NextResponse.json(productsErrors.createFailed.body, {
         status: productsErrors.createFailed.status
       })

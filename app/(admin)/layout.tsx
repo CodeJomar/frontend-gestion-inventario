@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 // Valid admin sections
-const validTabs = ["dashboard", "productos", "movimientos", "reportes", "usuarios"];
+const validTabs = ["dashboard", "productos", "movimientos", "reportes", "usuarios", "proveedores"];
 
 export default function Layout({
   children,

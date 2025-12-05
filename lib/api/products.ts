@@ -8,6 +8,7 @@ export async function fetchProducts(): Promise<Producto[]> {
 }
 
 export async function createProduct(data: any): Promise<Producto | string | null> {
+  console.log("Sending product data:", data);
   const res = await fetch("/api/products", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -16,7 +17,9 @@ export async function createProduct(data: any): Promise<Producto | string | null
   if (!res.ok) {
     const errorText = await res.text()
     console.error("FastAPI error:", errorText)
-    throw new Error("Error al crear producto")
+    console.error("Response status:", res.status)
+    console.error("Response headers:", res.headers)
+    throw new Error(`Error al crear producto: ${errorText}`)
   }
   const contentType = res.headers.get("content-type")
   if (contentType?.includes("application/json")) {

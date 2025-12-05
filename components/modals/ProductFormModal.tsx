@@ -91,16 +91,34 @@ export function ProductFormModal({
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
 
-    const payload = {
-      nombre: form.nombre,
-      marca: form.marca,
-      categoria: form.categoria,
-      descripcion: form.descripcion,
-      precio: form.precio,
-      stock: form.stock,
-      imagen_url: form.imagen_url,
+    // Validate required fields
+    if (!form.nombre.trim()) {
+      alert("El nombre del producto es requerido");
+      return;
+    }
+    
+    if (!form.tipo.trim()) {
+      alert("El tipo de producto es requerido");
+      return;
+    }
+    
+    if (!form.categoria.trim()) {
+      alert("La categoría es requerida");
+      return;
     }
 
+    const payload = {
+      nombre: form.nombre.trim(),
+      marca: form.marca.trim() || "",
+      categoria: form.categoria,
+      descripcion: form.descripcion.trim() || "",
+      tipo: form.tipo,
+      precio: parseFloat(form.precio.toString()) || 0,
+      stock: parseInt(form.stock.toString()) || 0,
+      imagen_url: form.imagen_url.trim() || "",
+    }
+
+    console.log("Product payload being sent:", payload);
     onSubmit(payload)
     onOpenChange(false)
   }
@@ -128,8 +146,8 @@ export function ProductFormModal({
 
           <div className="space-y-2">
             <Label htmlFor="tipo">Tipo</Label>
-            <Select onValueChange={(value) => setForm((prev) => ({ ...prev, tipo: value }))}>
-              <SelectTrigger className="w-full">
+            <Select value={form.tipo} onValueChange={(value) => setForm((prev) => ({ ...prev, tipo: value }))}>
+              <SelectTrigger>
                 <SelectValue placeholder="Selecciona un tipo" />
               </SelectTrigger>
               <SelectContent>
@@ -161,7 +179,7 @@ export function ProductFormModal({
 
         <div className="space-y-2">
           <Label htmlFor="categoria">Categoría</Label>
-          <Select onValueChange={(value) => setForm((prev) => ({ ...prev, categoria: value }))}>
+          <Select value={form.categoria} onValueChange={(value) => setForm((prev) => ({ ...prev, categoria: value }))}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Selecciona una categoría" />
             </SelectTrigger>
