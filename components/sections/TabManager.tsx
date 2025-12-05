@@ -1,7 +1,7 @@
 "use client";
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowDownCircle, BarChart3, Package, TrendingUp, Users } from "lucide-react";
+import { ArrowDownCircle, BarChart3, Package, TrendingUp, Users, Building2 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -30,7 +30,7 @@ export default function TabManager({
   return (
     <main className="container mx-auto px-4 py-6">
       <Tabs value={activeTab} onValueChange={changePage} className="space-y-6 mb-6">
-        <TabsList className="grid w-full grid-cols-5 lg:w-[800px]">
+        <TabsList className="grid w-full grid-cols-6 lg:w-[900px]">
           <TabsTrigger value="dashboard" className="flex items-center gap-2 cursor-pointer">
             <BarChart3 className="h-4 w-4" />
             Dashboard
@@ -38,6 +38,10 @@ export default function TabManager({
           <TabsTrigger value="productos" className="flex items-center gap-2 cursor-pointer">
             <Package className="h-4 w-4" />
             Productos
+          </TabsTrigger>
+          <TabsTrigger value="proveedores" className="flex items-center gap-2 cursor-pointer">
+            <Building2 className="h-4 w-4" />
+            Proveedores
           </TabsTrigger>
           <TabsTrigger value="movimientos" className="flex items-center gap-2 cursor-pointer">
             <ArrowDownCircle className="h-4 w-4" />

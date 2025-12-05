@@ -58,5 +58,42 @@ export function useAuth() {
     await logoutFromApp();
   }
 
-  return { user, session, login, logout, loading, error };
+  async function updateProfile(updates: { full_name?: string }) {
+    setLoading(true);
+    setError(null);
+
+    const { data, error } = await supabase.auth.updateUser({
+      data: updates
+    });
+
+    if (error) {
+      setError(error.message);
+      setLoading(false);
+      throw error;
+    }
+
+    setUser(data?.user ?? null);
+    setLoading(false);
+    return { data, error };
+  }
+
+  async function changePassword(newPassword: string) {
+    setLoading(true);
+    setError(null);
+
+    const { data, error } = await supabase.auth.updateUser({
+      password: newPassword
+    });
+
+    if (error) {
+      setError(error.message);
+      setLoading(false);
+      throw error;
+    }
+
+    setLoading(false);
+    return { data, error };
+  }
+
+  return { user, session, login, logout, updateProfile, changePassword, loading, error };
 }

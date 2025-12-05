@@ -6,37 +6,27 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Search, Filter, Plus, Edit, Trash2, Package, PinOff } from "lucide-react"
+import { Search, Filter, Plus, Edit, Trash2, Package, PinOff, ArrowUpDown, Settings } from "lucide-react"
 import { ProductFormModal } from "@/components/modals/ProductFormModal"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { Loader2Icon } from "lucide-react"
 import { createProduct, fetchProducts, updateProduct } from "@/lib/api/products"
 import { Producto } from "@/types/products"
 import { useProducts } from "@/lib/hooks/useProducts"
+import { useCategorias } from "@/lib/hooks/useCategorias"
 import { Skeleton } from "@/components/ui/skeleton"
-
-
-export const categorias = [
-  "Cocina",
-  "Limpieza",
-  "Lavandería",
-  "Climatización",
-  "Belleza Personal",
-  "Cuidado del Hogar",
-  "Electrodomésticos Pequeños",
-  "Entretenimiento",
-  "Oficina y Tecnología",
-  "Otros"
-]
+import Link from "next/link"
 
 export const tipos = ["electrodomestico", "accesorio", "consumible"]
 
 export default function page() {
   const { productsList, loading, loadProducts, actionLoadingIds, activarProductoById, desactivarProductoById } = useProducts()
+  const { categorias } = useCategorias()
   const [searchTerm, setSearchTerm] = useState("")
 
   const [filterEstado, setFilterEstado] = useState<"activo" | "inactivo" | "todos">("todos")
   const [filterCategoria, setFilterCategoria] = useState<string>("todos")
+  const [sortBy, setSortBy] = useState<string>("nombre")
 
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState<"create" | "edit">("create")
@@ -45,21 +35,42 @@ export default function page() {
   const [confirmProduct, setConfirmProduct] = useState<Producto | null>(null)
   const [confirmAction, setConfirmAction] = useState<"desactivar" | "activar" | null>(null)
 
-  const filteredProducts = productsList.filter((product) => {
-    const matchesSearchTerm =
-      product.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.categoria.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredProducts = productsList
+    .filter((product) => {
+      const matchesSearchTerm =
+        product.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.categoria.toLowerCase().includes(searchTerm.toLowerCase())
 
-    const matchesEstado =
-      filterEstado === "todos" ||
-      (filterEstado === "activo" && product.estado !== false) ||
-      (filterEstado === "inactivo" && product.estado === false)
+      const matchesEstado =
+        filterEstado === "todos" ||
+        (filterEstado === "activo" && product.estado !== false) ||
+        (filterEstado === "inactivo" && product.estado === false)
 
-    const matchesCategoria =
-      filterCategoria === "todos" || product.categoria === filterCategoria
+      const matchesCategoria =
+        filterCategoria === "todos" || product.categoria === filterCategoria
 
-    return matchesSearchTerm && matchesEstado && matchesCategoria
-  });
+      return matchesSearchTerm && matchesEstado && matchesCategoria
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case "precio-asc":
+          return a.precio - b.precio
+        case "precio-desc":
+          return b.precio - a.precio
+        case "stock-asc":
+          return a.stock - b.stock
+        case "stock-desc":
+          return b.stock - a.stock
+        case "nombre":
+          return a.nombre.localeCompare(b.nombre)
+        case "categoria":
+          return a.categoria.localeCompare(b.categoria)
+        case "reciente":
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        default:
+          return 0
+      }
+    });
 
   function handleAddProduct() {
     setModalMode("create")
@@ -100,34 +111,34 @@ export default function page() {
     <div className="space-y-12">
       {/* Header Actions */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between">
-        <div className="flex flex-1 gap-6">
+        <div className="flex flex-1 gap-2">
           <div className="relative flex-1 max-w-xs">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
-              placeholder="Buscar productos por nombre"
+              placeholder="Buscar productos..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
             />
           </div>
-          <div className="flex gap-4">
+          <div className="flex gap-2 flex-wrap">
             <Select value={filterEstado} onValueChange={(value) => setFilterEstado(value as "activo" | "inactivo" | "todos")}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Filtrar por estado" />
+              <SelectTrigger className="w-32">
+                <SelectValue placeholder="Estado" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todos">Filtrar por estado</SelectItem>
+                <SelectItem value="todos">Estado</SelectItem>
                 <SelectItem value="activo">Activos</SelectItem>
                 <SelectItem value="inactivo">Inactivos</SelectItem>
               </SelectContent>
             </Select>
 
             <Select value={filterCategoria} onValueChange={(value) => setFilterCategoria(value)}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Filtrar por categoría" />
+              <SelectTrigger className="w-42">
+                <SelectValue placeholder="Categoría" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todos">Filtrar por categoría</SelectItem>
+                <SelectItem value="todos">Categorías</SelectItem>
                 {categorias.map((categoria) => (
                   <SelectItem key={categoria} value={categoria}>
                     {categoria}
@@ -135,23 +146,47 @@ export default function page() {
                 ))}
               </SelectContent>
             </Select>
+            
+            <Select value={sortBy} onValueChange={(value) => setSortBy(value)}>
+              <SelectTrigger className="w-42">
+                <SelectValue placeholder="Ordenar" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="nombre">Ordenar</SelectItem>
+                <SelectItem value="reciente">Más reciente</SelectItem>
+                <SelectItem value="categoria">Categoría A-Z</SelectItem>
+                <SelectItem value="precio-asc">Precio más bajo</SelectItem>
+                <SelectItem value="precio-desc">Precio más alto</SelectItem>
+                <SelectItem value="stock-asc">Stock bajo</SelectItem>
+                <SelectItem value="stock-desc">Stock alto</SelectItem>
+              </SelectContent>
+            </Select>
+            
             <Button
-              variant="secondary"
+              variant="outline"
               size="sm"
-              className="cursor-pointer"
+              className="cursor-pointer px-3"
               onClick={() => {
                 setFilterEstado("todos");
                 setFilterCategoria("todos");
                 setSearchTerm("");
+                setSortBy("nombre");
               }}
             >
-              Ver Todo
+              Limpiar
+            </Button>
+            
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/categorias">
+                <Settings className="h-4 w-4 mr-1" />
+                Categorías
+              </Link>
             </Button>
           </div>
         </div>
-        <Button className="cursor-pointer" onClick={handleAddProduct}>
+        <Button className="cursor-pointer shrink-0" onClick={handleAddProduct}>
           <Plus className="h-4 w-4 mr-2" />
-          Agregar Producto
+          Agregar
         </Button>
       </div>
 
@@ -209,6 +244,11 @@ export default function page() {
                 </div>
               </CardHeader>
               <CardContent>
+                {product.descripcion && (
+                  <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
+                    {product.descripcion}
+                  </p>
+                )}
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <p className="text-2xl font-bold text-primary">S/. {product.precio}</p>
